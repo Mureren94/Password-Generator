@@ -23,7 +23,7 @@ Thank you for considering contributing! This document outlines the process for s
 
 ## Pull Request Process
 
-1. Fork the repository and create your branch from `main`.
+1. Fork the repository and create your branch from `master`.
 2. Test your changes in a browser — open `index.html` directly and verify all types still generate correctly.
 3. Ensure the UI is responsive (test at different viewport widths).
 4. Update documentation if you change behavior or add features.

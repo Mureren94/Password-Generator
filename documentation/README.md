@@ -23,7 +23,7 @@
 
 1. Download or clone this repository:
    ```bash
-   git clone https://github.com/<username>/password-generator.git
+   git clone https://github.com/Mureren94/Password-Generator.git
    ```
 2. Open `password-generator/index.html` in any modern browser.
 3. Select a password type from the sidebar, configure your settings, and click **Generate**.
