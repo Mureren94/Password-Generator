@@ -1,0 +1,1324 @@
+﻿
+# Password Generator — Full Documentation Corpus
+
+> Complete documentation and source code for AI coding assistants. Generated 2026-08-23.
+
+---
+
+## README.md
+
+# Password Generator
+
+> Cryptographically secure password, token, and secret generator. Single-file HTML app with zero dependencies, powered by vanilla JavaScript and `crypto.getRandomValues()`.
+
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Password Types](#password-types)
+- [Architecture](#architecture)
+- [Troubleshooting](#troubleshooting)
+- [AI & Developer Documentation](#ai--developer-documentation)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Quick Start
+
+**No installation. No build step. No npm. No server.** Just open the file in your browser.
+
+1. Download or clone this repository:
+   ```bash
+   git clone https://github.com/<username>/password-generator.git
+   ```
+2. Open `password-generator/index.html` in any modern browser.
+3. Select a password type from the sidebar, configure your settings, and click **Generate**.
+
+> Alternatively, host it on **GitHub Pages** for an always-available online version.
+
+---
+
+## Features
+
+- **18 password & secret types** across 4 categories â€” from simple PIN codes to JWT secrets and UUIDs.
+- **Dark theme UI** â€” same styling as GitHub's design system. Responsive for desktop and mobile.
+- **Cryptographically secure** â€” all values use `crypto.getRandomValues()`, never `Math.random()`.
+- **Copy-to-clipboard** â€” one click to copy any generated value.
+- **Favorites** â€” star frequently used types for quick access.
+- **History** â€” last 5 generations are saved; click to restore settings and regenerate.
+- **Bulk generation** â€” generate up to 100 values at once.
+- **Export** â€” download generated values as `.txt` or `.csv`.
+- **QR code** â€” OTP/TOTP secrets render as QR codes with SVG/PNG/PDF download.
+- **i18n** â€” built-in Danish and English. Import/export custom language files.
+- **Docker/.env-safe mode** â€” avoids characters that break in `.env` files and Docker Compose (`$'"\`!&#*?=:`).
+- **Custom wordlist upload** â€” upload your own dictionary for passphrase generation.
+- **Keyboard shortcut** â€” `Ctrl+Enter` (Windows/Linux) or `Cmd+Enter` (Mac) to generate.
+- **Zero dependencies** â€” everything is vanilla HTML, CSS, and JavaScript in a single HTML file plus supporting scripts.
+
+---
+
+## Password Types
+
+### User-facing Passwords
+
+| Type | Description | Key Settings |
+|---|---|---|
+| **Alphanumeric** | Random characters (a-z, A-Z, 0-9, special chars) | Length (8â€“128), special chars toggle, Docker/.env-safe |
+| **Passphrase / Diceware** | Random dictionary words for memorable master passwords | Word count (3â€“12), separator, wordlist (Danish/English/Custom) |
+| **PIN Code** | Numeric only | Length (4â€“8) |
+| **Pronounceable** | Phonetic syllables that can be spoken aloud | Syllable count (3â€“8) |
+| **OTP / TOTP** | Base32 secret key for authenticator apps | 16/32 characters, QR code output |
+
+### Cryptographic Noise & Hashes
+
+| Type | Description | Key Settings |
+|---|---|---|
+| **Salt** | Random value added before hashing | Length (16/32/64 bytes), format (Hex/Base64) |
+| **Pepper** | Secret system value added during hashing | Length (32/64/128 bytes), format (Hex/Base64) |
+| **Nonce / IV** | One-time value for encryption | Length (12/16 bytes), format (Hex/Base64) |
+| **Encryption Key** | 256-bit AES key for symmetric encryption | Format (Hex/Base64) |
+
+### API & System Secrets
+
+| Type | Description | Key Settings |
+|---|---|---|
+| **API Key/Secret** | Key for API access with optional prefix | Prefix (e.g. `sk_live_`), length (32/48/64), format (alphanumeric/hex) |
+| **Bearer/Session Token** | URL-safe authentication token | Length (32/64/128), format (Hex/Base64URL) |
+| **JWT HMAC Secret** | Secret for signing JSON Web Tokens | Size (256/512 bit), format (Hex/Base64) |
+| **OAuth Client Secret** | High-entropy client secret | Length (32/48/64), alphanumeric |
+| **Webhook Secret** | HMAC signing key for webhook verification | Length (32/64), format (Hex/Base64) |
+
+### Identifiers & Tokens
+
+| Type | Description | Key Settings |
+|---|---|---|
+| **UUID v4** | RFC 4122 universally unique identifier | Format (standard/without dashes/uppercase) |
+| **Magic Link / Reset Token** | Time-limited token for passwordless login | Length (32/64/128), format (Hex/Base64URL) |
+| **Recovery / Backup Codes** | Printable backup codes for account recovery | Count (5â€“20), format (with/without dashes) |
+
+---
+
+## Architecture
+
+```
+password-generator/
+â”œâ”€â”€ index.html          # HTML structure + embedded CSS (dark theme)
+â”œâ”€â”€ app.js              # State management, UI rendering, event handling
+â”œâ”€â”€ types.js            # 18 password type definitions, categories, generators
+â”œâ”€â”€ wordlists.js        # ~1000 Danish words + ~1000 English words (Diceware)
+â”œâ”€â”€ i18n.js             # Internationalization (da/en) + custom language loader
+â””â”€â”€ qr.js               # Standalone QR code generator (SVG/PNG/PDF output)
+```
+
+**Data flow:**
+1. User selects a type in the sidebar â†’ `app.js` reads type definition from `types.js`
+2. Settings panel renders dynamically from the type's settings definition
+3. User configures settings and clicks "Generate" â†’ type's `generate()` function runs
+4. `crypto.getRandomValues()` fills typed arrays with cryptographically secure random bytes
+5. Results are displayed with copy buttons, download options, and optional QR code
+6. History is stored in `localStorage` (last 5 entries) and rendered at the top of the page
+
+**Design principles:**
+- Pure functions for generation â€” deterministic output given the same RNG state
+- No global state mutations outside of `state` object in `app.js`
+- All DOM manipulation happens in render functions; no inline event handlers in HTML
+- CSS uses CSS custom properties (variables) for theming; single source of truth for colors
+
+---
+
+## Troubleshooting
+
+### The page is blank or doesn't load
+- Make sure you're opening `index.html` and all `.js` files are in the same directory.
+- Open browser DevTools (F12) and check the Console tab for errors.
+- The app requires a modern browser (Chrome, Firefox, Edge, Safari â€” released 2020 or later).
+
+### Copy button doesn't work
+- Clipboard API requires a secure context (HTTPS or `localhost`). When opened via `file://`, the app falls back to `document.execCommand('copy')`.
+- Some browsers block clipboard access on `file://` protocol. Host on a local server or GitHub Pages for full clipboard support.
+
+### QR code doesn't render
+- QR codes only appear for OTP/TOTP type. Other types won't show QR codes.
+- If the QR code is blank, check browser console for SVG rendering errors.
+
+### Custom wordlist upload doesn't work
+- Uploaded file must be a `.txt` file with one word per line (newline-separated).
+- Empty lines are automatically filtered out.
+- The wordlist is stored in memory only; refreshing the page resets it.
+
+### Generated password doesn't appear in history
+- History is limited to the last 5 entries. Older entries are automatically pruned.
+- History is stored in `localStorage`; clearing browser data will clear it.
+
+---
+
+## AI & Developer Documentation
+
+This repository includes structured documentation optimized for AI coding assistants (Cursor, Copilot, Claude Code, etc.):
+
+- **[llms.txt](llms.txt)** â€” concise reference with file structure, architecture, and key conventions. Point AI assistants to this file to get context quickly.
+- **[llms-full.txt](llms-full.txt)** â€” complete documentation corpus including all source code. Load this for deep understanding of the entire codebase.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code standards and pull request process.
+
+All contributors are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## License
+
+This project is licensed under the MIT License â€” see [LICENSE](LICENSE) for details.
+
+---
+
+## llms.txt (AI Reference)
+
+# Password Generator - AI Documentation (llms.txt)
+
+> Concise reference for AI coding assistants (Cursor, Copilot, Claude Code). Load this file to understand the project structure and conventions.
+
+## Project Overview
+
+A zero-dependency, single-page password, token, and secret generator. Vanilla HTML/CSS/JS. All random values use `crypto.getRandomValues()`. Dark-themed responsive UI with i18n support (Danish/English).
+
+## File Structure
+
+```
+password-generator/
+â”œâ”€â”€ index.html          # Entry point. HTML structure + embedded CSS (176 lines)
+â”œâ”€â”€ app.js              # State management, UI rendering, event handling (350 lines)
+â”œâ”€â”€ types.js            # Type definitions, categories, generation functions (149 lines)
+â”œâ”€â”€ wordlists.js        # WORDLIST_DA (~1000 words) + WORDLIST_EN (~1000 words)
+â”œâ”€â”€ i18n.js             # I18N object (da/en), t() helper, custom language loader (131 lines)
+â””â”€â”€ qr.js               # Standalone QR code generator, SVG/PNG/PDF output (133 lines)
+```
+
+## Load Order
+
+Scripts must load in this order: `i18n.js` â†’ `wordlists.js` â†’ `qr.js` â†’ `types.js` â†’ `app.js`
+
+`i18n.js` must load first because `types.js` calls `t()` at module level (not recommended but current behavior). `app.js` calls `renderAll()` at end-of-file which bootstraps the entire UI.
+
+## Global Namespace
+
+All scripts use global `var` declarations â€” no ES modules, no bundler:
+
+- `var I18N` â€” translation dictionary (da, en)
+- `var LANG` â€” current language code
+- `var t(k)` â€” translate function
+- `var setLang(lang)` â€” switch language
+- `var TYPES` â€” password type registry
+- `var CATEGORIES` â€” category array with type references
+- `var WORDLIST_DA`, `var WORDLIST_EN` â€” word lists
+- `var QR` â€” QR code generator namespace
+- `var state` â€” central application state
+
+## State Object (app.js)
+
+```js
+var state = {
+  selectedType: null,        // currently selected type ID (string from TYPES keys)
+  settings: {},              // current settings {key: value} for selected type
+  history: [],               // last 5 entries [{typeId, typeName, values, settings, timestamp}]
+  results: [],               // currently displayed generated values (strings)
+  favorites: [],             // favorited type IDs (persisted to localStorage)
+  customWordlist: null,      // uploaded word array or null
+  customWordlistName: null   // filename of uploaded wordlist
+};
+```
+
+## Type Definition Schema (types.js)
+
+Each type in `TYPES` follows this structure:
+
+```js
+{
+  id: 'string',              // unique key
+  nameKey: 'translationKey', // i18n key for display name
+  icon: 'emoji',             // unicode emoji or escape sequence
+  categoryKey: 'catKey',     // i18n key for category name
+  popupKey: 'popupKey',      // i18n key for hover tooltip
+  settings: [                // array of setting definitions
+    {
+      key: 'settingName',    // stored key in state.settings
+      labelKey: 'i18nKey',   // i18n key for label
+      type: 'number|select|toggle|text',
+      // type-specific:
+      min: 0, max: 100,      // for number
+      options: ['opt1', 'opt2'],  // for select
+      default: value         // default value
+    }
+  ],
+  generate: function(settings) { return [string, ...]; },  // returns array of strings
+  supportsQR: true,          // optional: show QR code for first result
+  getQRData: function(value) { return 'otpauth://...'; }   // optional: QR data string
+}
+```
+
+## Categories Schema
+
+```js
+var CATEGORIES = [
+  { nameKey: 'catKey', types: ['typeId1', 'typeId2', ...] },
+  ...
+];
+```
+
+Each category references its types by their TYPES key. Order in `CATEGORIES` determines sidebar order.
+
+## Render Pipeline
+
+`renderAll()` (app.js line 292) orchestrates all rendering:
+1. `updateLangSelect()` â€” rebuild language dropdown
+2. `renderTypeList()` â€” rebuild sidebar (favorites first, then categories)
+3. `renderSettings()` â€” rebuild settings grid for selected type
+4. `renderResults()` â€” rebuild results list with copy/QR/download buttons
+5. `renderHistory()` â€” rebuild history list
+6. Update title text and empty state
+
+## Key Conventions
+
+- All generation functions accept a `settings` object (key-value pairs from the UI) and return `string[]`.
+- Translation keys for options use `optXxx` prefix. Type names use `typeXxx`. Category names use `catXxx`.
+- Settings with `type: 'select'` use translation keys as option values (not the display text).
+- `localStorage` keys are prefixed with `pwgen_` to avoid collisions.
+- QR code SVG is rendered inline as DOM string, not via `<img>` tag.
+- History items encode settings as `encodeURIComponent(JSON.stringify(...))` in a `data-settings` attribute.
+- The hover popup uses `data-popup` attribute with pre-translated text (escaped for HTML).
+- UUID v4 follows RFC 4122: version 4 (bits 48-51 = `0100`) and variant 1 (bits 64-65 = `10`).
+
+## Extension Points
+
+To add a new password type:
+1. Add an entry to `TYPES` in `types.js` with all required fields.
+2. Add translation keys to `I18N.da` and `I18N.en` in `i18n.js` (name, popup, settings labels/options).
+3. Add the type ID to the appropriate category in `CATEGORIES`.
+
+To add a new language:
+1. Add a new object under `I18N` (e.g., `I18N.fr = { ... }`).
+2. Translate all keys â€” use `I18N.en` as the reference for required keys.
+3. Add the language to the `<select>` in `index.html` or use the Import Language feature.
+
+---
+
+## Source Code
+
+### index.html
+
+``html
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Generator</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #0d1117; --bg-secondary: #161b22; --bg-tertiary: #21262d;
+  --border: #30363d; --text-primary: #c9d1d9; --text-secondary: #8b949e;
+  --text-muted: #6e7681; --accent: #58a6ff; --accent-hover: #79c0ff;
+  --success: #3fb950; --warning: #d2991d; --danger: #f85149; --radius: 6px; --transition: 150ms ease;
+}
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); font-size: 14px; line-height: 1.5; overflow: hidden; }
+.app { display: flex; height: 100vh; }
+.sidebar { width: 300px; min-width: 300px; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
+.category { margin-bottom: 4px; }
+.category-header { padding: 8px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); cursor: default; }
+.type-item { position: relative; display: flex; align-items: center; padding: 8px 16px 8px 24px; cursor: pointer; color: var(--text-secondary); transition: background var(--transition), color var(--transition); border-left: 3px solid transparent; font-size: 13px; }
+.type-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+.type-item.active { background: rgba(88, 166, 255, 0.08); color: var(--accent); border-left-color: var(--accent); }
+.type-item .type-icon { margin-right: 8px; font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+.type-item .type-name { flex: 1; }
+.fav-star { margin-left: 4px; cursor: pointer; font-size: 14px; color: var(--text-muted); transition: color var(--transition); flex-shrink: 0; padding: 2px 4px; user-select: none; }
+.fav-star:hover { color: var(--warning); }
+.fav-star.active { color: var(--warning); }
+.fav-section { border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 4px; }
+.fav-section .category-header { color: var(--warning); }
+.hover-popup { display: none; position: fixed; z-index: 1000; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; max-width: 280px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); pointer-events: none; }
+.hover-popup.visible { display: block; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.main-header { padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; }
+.main-header h2 { font-size: 18px; font-weight: 600; white-space: nowrap; }
+.header-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tool-btn { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: 4px; }
+.tool-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(88, 166, 255, 0.08); }
+.lang-select { padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-primary); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
+.lang-select:focus { border-color: var(--accent); }
+.main-content { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.history-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.history-header h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.history-actions { display: flex; gap: 6px; }
+.clear-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--text-muted); font-size: 11px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+.clear-btn:hover { border-color: var(--danger); color: var(--danger); }
+.history-list { display: flex; flex-direction: column; gap: 6px; }
+.history-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg-tertiary); border-radius: var(--radius); cursor: pointer; transition: background var(--transition); font-size: 13px; }
+.history-item:hover { background: var(--border); }
+.history-item .history-type { color: var(--text-muted); font-size: 11px; margin-right: 12px; flex-shrink: 0; }
+.history-item .history-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 12px; }
+.settings-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.settings-section h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.setting-group { display: flex; flex-direction: column; gap: 6px; }
+.setting-group label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.setting-group select, .setting-group input[type="number"], .setting-group input[type="text"] { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: border-color var(--transition); }
+.setting-group select:focus, .setting-group input:focus { border-color: var(--accent); }
+.setting-group input[type="number"] { width: 100%; }
+.toggle-group { display: flex; align-items: center; gap: 8px; }
+.toggle-group input[type="checkbox"] { appearance: none; width: 36px; height: 20px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; position: relative; cursor: pointer; transition: all var(--transition); flex-shrink: 0; }
+.toggle-group input[type="checkbox"]::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: var(--text-muted); border-radius: 50%; transition: all var(--transition); }
+.toggle-group input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+.toggle-group input[type="checkbox"]:checked::after { left: 18px; background: #fff; }
+.toggle-group label { font-size: 13px; color: var(--text-primary); cursor: pointer; }
+.generate-section { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.generate-btn { padding: 10px 24px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background var(--transition); font-family: inherit; }
+.generate-btn:hover { background: var(--accent-hover); }
+.generate-btn:active { transform: scale(0.98); }
+.bulk-group { display: flex; align-items: center; gap: 6px; }
+.bulk-group label { font-size: 12px; color: var(--text-secondary); }
+.bulk-group input[type="number"] { width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; }
+.bulk-group input:focus { border-color: var(--accent); }
+.result-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.result-header h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.result-list { display: flex; flex-direction: column; gap: 8px; }
+.result-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); }
+.result-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 14px; word-break: break-all; color: var(--success); }
+.copy-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; flex-shrink: 0; }
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.copied { border-color: var(--success); color: var(--success); background: rgba(63, 185, 80, 0.1); }
+.qr-container { margin-top: 12px; text-align: center; }
+.qr-container svg { background: #fff; border-radius: var(--radius); padding: 8px; max-width: 100%; height: auto; }
+.qr-dl-btns { display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+.qr-dl-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+.qr-dl-btn:hover { border-color: var(--accent); color: var(--accent); }
+.wordlist-upload { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.wordlist-status { font-size: 11px; color: var(--success); }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
+.empty-state p { font-size: 14px; margin-bottom: 4px; }
+.empty-state .empty-hint { font-size: 12px; color: var(--text-muted); }
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  .sidebar { width: 100%; min-width: 100%; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .main-content { padding: 16px; }
+  .settings-grid { grid-template-columns: 1fr; }
+  .header-tools { gap: 4px; }
+  .tool-btn { font-size: 10px; padding: 4px 6px; }
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">&#x1F510; <span id="sidebarTitle">Password Generator</span></div>
+    <nav class="sidebar-nav" id="typeList"></nav>
+  </aside>
+  <main class="main">
+    <div class="main-header">
+      <h2 id="mainTitle">VÃ¦lg en type</h2>
+      <div class="header-tools">
+        <select class="lang-select" id="langSelect"><option value="da">Dansk</option><option value="en">English</option></select>
+        <button class="tool-btn" id="importLangBtn" title="ImportÃ©r oversat sprogfil">&#x1F4E5; <span class="ilbl">ImportÃ©r sprog</span></button>
+        <button class="tool-btn" id="exportTemplateBtn" title="EksportÃ©r skabelon til oversÃ¦ttelse">&#x1F4E4; <span class="elbl">EksportÃ©r skabelon</span></button>
+        <input type="file" id="langFileInput" accept=".json" style="display:none;">
+      </div>
+    </div>
+    <div class="main-content">
+      <section class="history-section" id="historySection">
+        <div class="history-header">
+          <h3 id="historyTitle">&#x1F4CB; Seneste</h3>
+          <div class="history-actions">
+            <button class="clear-btn" id="clearClipboardBtn" title="Ryd udklipsholder">Ryd udklipsholder</button>
+            <button class="clear-btn" id="clearHistoryBtn" title="Ryd historik">Ryd</button>
+          </div>
+        </div>
+        <div class="history-list" id="historyList"><div class="history-empty" id="historyEmpty">Ingen historik endnu</div></div>
+      </section>
+      <section class="settings-section" id="settingsSection" style="display:none;">
+        <h3 id="settingsTitle">&#x2699;&#xFE0F; Indstillinger</h3>
+        <div class="settings-grid" id="settingsGrid"></div>
+        <div style="margin-top:16px;" class="generate-section">
+          <button class="generate-btn" id="generateBtn">GenerÃ©r</button>
+          <div class="bulk-group">
+            <label id="bulkLabel" for="bulkCount">Antal:</label>
+            <input type="number" id="bulkCount" min="1" max="100" value="1">
+          </div>
+        </div>
+      </section>
+      <section class="result-section" id="resultSection" style="display:none;">
+        <div class="result-header">
+          <h3 id="resultsTitle">&#x2728; Genererede vÃ¦rdier</h3>
+          <div class="result-actions">
+            <button class="tool-btn" id="downloadTxtBtn">&#x1F4C4; .txt</button>
+            <button class="tool-btn" id="downloadCsvBtn">&#x1F4CA; .csv</button>
+          </div>
+        </div>
+        <div class="result-list" id="resultList"></div>
+        <div class="qr-container" id="qrContainer" style="display:none;"></div>
+      </section>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">&#x1F511;</div>
+        <p id="emptyText">VÃ¦lg en password-type i menuen til venstre</p>
+        <p class="empty-hint" id="emptyHint">Alle passwords genereres kryptografisk sikkert med crypto.getRandomValues()</p>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="hover-popup" id="hoverPopup"></div>
+<script src="i18n.js"></script>
+<script src="wordlists.js"></script>
+<script src="qr.js"></script>
+<script src="types.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+``
+
+### app.js
+
+``javascript
+var state = {
+  selectedType: null,
+  settings: {},
+  history: JSON.parse(localStorage.getItem('pwgen_history') || '[]'),
+  results: [],
+  favorites: JSON.parse(localStorage.getItem('pwgen_favorites') || '[]'),
+  customWordlist: null,
+  customWordlistName: null
+};
+
+function saveHistory() { localStorage.setItem('pwgen_history', JSON.stringify(state.history)); }
+function saveFavorites() { localStorage.setItem('pwgen_favorites', JSON.stringify(state.favorites)); }
+
+function addToHistory(typeId, values) {
+  var entry = { typeId: typeId, typeName: t(TYPES[typeId].nameKey), values: values, settings: JSON.parse(JSON.stringify(state.settings)), timestamp: Date.now() };
+  state.history.unshift(entry);
+  if (state.history.length > 5) state.history = state.history.slice(0, 5);
+  saveHistory();
+  renderHistory();
+}
+
+function clearHistory() { state.history = []; saveHistory(); renderHistory(); }
+
+function clearClipboard() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText('').then(function() {
+      var btn = document.getElementById('clearClipboardBtn');
+      btn.textContent = t('clipboardCleared');
+      setTimeout(function() { btn.textContent = t('clearClipboard'); }, 2000);
+    }).catch(function() {});
+  }
+}
+
+function toggleFavorite(typeId) {
+  var idx = state.favorites.indexOf(typeId);
+  if (idx >= 0) state.favorites.splice(idx, 1);
+  else state.favorites.push(typeId);
+  saveFavorites();
+  renderTypeList();
+}
+
+function selectType(typeId, presetSettings) {
+  state.selectedType = typeId;
+  state.settings = {};
+  var type = TYPES[typeId];
+  type.settings.forEach(function(s) { state.settings[s.key] = s.default; });
+  if (presetSettings) {
+    Object.keys(presetSettings).forEach(function(k) { state.settings[k] = presetSettings[k]; });
+  }
+  state.results = [];
+  renderAll();
+}
+
+function generate() {
+  if (!state.selectedType) return;
+  var type = TYPES[state.selectedType];
+  var bulkCount = parseInt(document.getElementById('bulkCount').value) || 1;
+  state.results = [];
+  for (var i = 0; i < bulkCount; i++) {
+    var vals = type.generate(state.settings);
+    for (var j = 0; j < vals.length; j++) state.results.push(vals[j]);
+  }
+  addToHistory(state.selectedType, state.results);
+  renderResults();
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = t('copied');
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = t('copy'); btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    btn.textContent = t('copied'); btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = t('copy'); btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function downloadFile(content, filename, mime) {
+  var blob = new Blob([content], { type: mime });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function downloadTxt() {
+  if (state.results.length === 0) return;
+  var content = state.results.join('\n');
+  downloadFile(content, 'passwords.txt', 'text/plain');
+}
+
+function downloadCsv() {
+  if (state.results.length === 0) return;
+  var content = 'index,value\n';
+  state.results.forEach(function(v, i) { content += (i + 1) + ',"' + v.replace(/"/g, '""') + '"\n'; });
+  downloadFile(content, 'passwords.csv', 'text/csv');
+}
+
+function renderTypeList() {
+  var html = '';
+  var favs = state.favorites.filter(function(f) { return TYPES[f]; });
+  if (favs.length > 0) {
+    html += '<div class="fav-section"><div class="category-header">\u2B50 ' + t('favorites') + '</div>';
+    favs.forEach(function(typeId) {
+      var t2 = TYPES[typeId];
+      var active = state.selectedType === typeId ? ' active' : '';
+      html += '<div class="type-item' + active + '" data-type="' + typeId + '" data-popup="' + t(t2.popupKey).replace(/"/g, '&quot;') + '"><span class="type-icon">' + t2.icon + '</span><span class="type-name">' + t(t2.nameKey) + '</span><span class="fav-star active" data-fav="' + typeId + '">\u2605</span></div>';
+    });
+    html += '</div>';
+  }
+  CATEGORIES.forEach(function(cat) {
+    html += '<div class="category"><div class="category-header">' + t(cat.nameKey) + '</div>';
+    cat.types.forEach(function(typeId) {
+      if (state.favorites.indexOf(typeId) >= 0) return;
+      var t2 = TYPES[typeId];
+      var active = state.selectedType === typeId ? ' active' : '';
+      html += '<div class="type-item' + active + '" data-type="' + typeId + '" data-popup="' + t(t2.popupKey).replace(/"/g, '&quot;') + '"><span class="type-icon">' + t2.icon + '</span><span class="type-name">' + t(t2.nameKey) + '</span><span class="fav-star" data-fav="' + typeId + '">\u2606</span></div>';
+    });
+    html += '</div>';
+  });
+  document.getElementById('typeList').innerHTML = html;
+
+  var items = document.querySelectorAll('.type-item');
+  var popup = document.getElementById('hoverPopup');
+  items.forEach(function(item) {
+    item.addEventListener('click', function(e) {
+      if (e.target.classList.contains('fav-star')) return;
+      selectType(this.dataset.type);
+    });
+    item.addEventListener('mouseenter', function(e) {
+      popup.textContent = this.dataset.popup;
+      popup.classList.add('visible');
+    });
+    item.addEventListener('mousemove', function(e) {
+      var x = e.clientX + 12, y = e.clientY + 12;
+      if (x + 280 > window.innerWidth) x = e.clientX - 292;
+      if (y + 80 > window.innerHeight) y = e.clientY - 90;
+      popup.style.left = x + 'px'; popup.style.top = y + 'px';
+    });
+    item.addEventListener('mouseleave', function() { popup.classList.remove('visible'); });
+  });
+
+  var stars = document.querySelectorAll('.fav-star');
+  stars.forEach(function(star) {
+    star.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleFavorite(this.dataset.fav);
+    });
+  });
+}
+
+function renderSettings() {
+  var section = document.getElementById('settingsSection');
+  var grid = document.getElementById('settingsGrid');
+  if (!state.selectedType) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  var type = TYPES[state.selectedType];
+  var html = '';
+  type.settings.forEach(function(s) {
+    html += '<div class="setting-group">';
+    if (s.type === 'toggle') {
+      html += '<div class="toggle-group">';
+      html += '<input type="checkbox" id="set_' + s.key + '"' + (state.settings[s.key] ? ' checked' : '') + ' data-key="' + s.key + '">';
+      html += '<label for="set_' + s.key + '">' + t(s.labelKey) + '</label>';
+      html += '</div>';
+    } else if (s.type === 'select') {
+      html += '<label>' + t(s.labelKey) + '</label>';
+      html += '<select id="set_' + s.key + '" data-key="' + s.key + '">';
+      s.options.forEach(function(opt) {
+        var sel = state.settings[s.key] == opt ? ' selected' : '';
+        html += '<option value="' + opt + '"' + sel + '>' + t(opt) + '</option>';
+      });
+      html += '</select>';
+    } else if (s.type === 'number') {
+      html += '<label>' + t(s.labelKey) + '</label>';
+      html += '<input type="number" id="set_' + s.key + '" data-key="' + s.key + '" min="' + s.min + '" max="' + s.max + '" value="' + state.settings[s.key] + '">';
+    } else if (s.type === 'text') {
+      html += '<label>' + t(s.labelKey) + '</label>';
+      html += '<input type="text" id="set_' + s.key + '" data-key="' + s.key + '" value="' + (state.settings[s.key] || '') + '">';
+    }
+    html += '</div>';
+  });
+  if (type.id === 'passphrase') {
+    html += '<div class="setting-group"><div class="wordlist-upload"><button class="tool-btn" id="uploadWordlistBtn">\uD83D\uDCC1 ' + t('uploadWordlist') + '</button><span class="wordlist-status" id="wordlistStatus">' + (state.customWordlist ? t('wordlistLoaded') + state.customWordlistName : t('wordlistNone')) + '</span></div><input type="file" id="wordlistFileInput" accept=".txt" style="display:none;"></div>';
+  }
+  grid.innerHTML = html;
+
+  var inputs = grid.querySelectorAll('input, select');
+  inputs.forEach(function(input) {
+    input.addEventListener('change', function() {
+      var key = this.dataset.key;
+      if (this.type === 'checkbox') state.settings[key] = this.checked;
+      else if (this.type === 'number') state.settings[key] = parseInt(this.value) || type.settings.find(function(s2) { return s2.key === key; }).default;
+      else state.settings[key] = this.value;
+    });
+  });
+
+  var wlBtn = document.getElementById('uploadWordlistBtn');
+  if (wlBtn) {
+    wlBtn.addEventListener('click', function() { document.getElementById('wordlistFileInput').click(); });
+    var wlInput = document.getElementById('wordlistFileInput');
+    wlInput.addEventListener('change', function() {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var lines = e.target.result.split(/[\r\n]+/).filter(function(l) { return l.trim().length > 0; });
+        state.customWordlist = lines;
+        state.customWordlistName = file.name;
+        document.getElementById('wordlistStatus').textContent = t('wordlistLoaded') + file.name;
+        if (state.settings.language !== 'optCustom') {
+          state.settings.language = 'optCustom';
+          var sel = document.getElementById('set_language');
+          if (sel) sel.value = 'optCustom';
+        }
+      };
+      reader.readAsText(file);
+    });
+  }
+}
+
+function renderResults() {
+  var section = document.getElementById('resultSection');
+  var list = document.getElementById('resultList');
+  var qrContainer = document.getElementById('qrContainer');
+  if (state.results.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  var html = '';
+  state.results.forEach(function(val, idx) {
+    html += '<div class="result-item"><span class="result-value">' + val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span><button class="copy-btn" data-value="' + val.replace(/"/g, '&quot;') + '">' + t('copy') + '</button></div>';
+  });
+  list.innerHTML = html;
+
+  var buttons = list.querySelectorAll('.copy-btn');
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', function() { copyToClipboard(this.dataset.value, this); });
+  });
+
+  qrContainer.style.display = 'none';
+  qrContainer.innerHTML = '';
+  if (state.selectedType && TYPES[state.selectedType].supportsQR && state.results.length > 0) {
+    var type = TYPES[state.selectedType];
+    var qrData = type.getQRData(state.results[0]);
+    var qr = QR.generate(qrData);
+    var svg = QR.toSVG(qr.matrix, qr.size, 3, 2);
+    qrContainer.style.display = 'block';
+    qrContainer.innerHTML = '<h4 style="margin-bottom:8px;color:var(--text-secondary);font-size:12px;">' + t('qrCode') + '</h4><div>' + svg + '</div><div class="qr-dl-btns"><button class="qr-dl-btn" id="qrSvgBtn">' + t('downloadSvg') + '</button><button class="qr-dl-btn" id="qrPngBtn">' + t('downloadPng') + '</button><button class="qr-dl-btn" id="qrPdfBtn">' + t('downloadPdf') + '</button></div>';
+    document.getElementById('qrSvgBtn').addEventListener('click', function() { QR.downloadSVG(svg, 'otp-qr.svg'); });
+    document.getElementById('qrPngBtn').addEventListener('click', function() { QR.downloadPNG(svg, 'otp-qr.png'); });
+    document.getElementById('qrPdfBtn').addEventListener('click', function() { QR.downloadPDF(svg, 'otp-qr.pdf'); });
+  }
+}
+
+function renderHistory() {
+  var list = document.getElementById('historyList');
+  if (state.history.length === 0) {
+    list.innerHTML = '<div class="history-empty">' + t('noHistory') + '</div>';
+    return;
+  }
+  var html = '';
+  state.history.forEach(function(entry) {
+    var val = entry.values[0] || '';
+    if (val.length > 60) val = val.substring(0, 60) + '...';
+    html += '<div class="history-item" data-type="' + entry.typeId + '" data-settings="' + encodeURIComponent(JSON.stringify(entry.settings)) + '"><span class="history-type">' + entry.typeName + '</span><span class="history-value">' + val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span></div>';
+  });
+  list.innerHTML = html;
+
+  var items = list.querySelectorAll('.history-item');
+  items.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var typeId = this.dataset.type;
+      var settings = JSON.parse(decodeURIComponent(this.dataset.settings));
+      selectType(typeId, settings);
+    });
+  });
+}
+
+function updateLangSelect() {
+  var sel = document.getElementById('langSelect');
+  sel.innerHTML = '<option value="da">Dansk</option><option value="en">English</option>';
+  var customLangs = getCustomLangs();
+  customLangs.forEach(function(lc) { sel.innerHTML += '<option value="' + lc + '">' + lc + '</option>'; });
+  sel.value = LANG;
+}
+
+function renderAll() {
+  updateLangSelect();
+  renderTypeList();
+  renderSettings();
+  renderResults();
+  renderHistory();
+  var title = document.getElementById('mainTitle');
+  var empty = document.getElementById('emptyState');
+  if (state.selectedType) { title.textContent = t(TYPES[state.selectedType].nameKey); empty.style.display = 'none'; }
+  else { title.textContent = t('selectType'); empty.style.display = 'block'; }
+  document.getElementById('sidebarTitle').textContent = t('appTitle');
+  document.getElementById('historyTitle').innerHTML = '\uD83D\uDCCB ' + t('history');
+  document.getElementById('settingsTitle').innerHTML = '\u2699\uFE0F ' + t('settings');
+  document.getElementById('resultsTitle').innerHTML = '\u2728 ' + t('results');
+  document.getElementById('generateBtn').textContent = t('generate');
+  document.getElementById('bulkLabel').textContent = t('bulkLabel');
+  document.getElementById('clearHistoryBtn').textContent = t('clearHistory');
+  document.getElementById('clearClipboardBtn').textContent = t('clearClipboard');
+  document.getElementById('emptyText').textContent = t('emptyText');
+  document.getElementById('emptyHint').textContent = t('emptyHint');
+  document.getElementById('downloadTxtBtn').innerHTML = '\uD83D\uDCC4 ' + t('downloadTxt');
+  document.getElementById('downloadCsvBtn').innerHTML = '\uD83D\uDCCA ' + t('downloadCsv');
+  document.querySelector('.ilbl').textContent = t('importLang');
+  document.querySelector('.elbl').textContent = t('exportTemplate');
+  if (state.history.length === 0) document.getElementById('historyList').innerHTML = '<div class="history-empty">' + t('noHistory') + '</div>';
+}
+
+document.getElementById('clearHistoryBtn').addEventListener('click', clearHistory);
+document.getElementById('clearClipboardBtn').addEventListener('click', clearClipboard);
+document.getElementById('generateBtn').addEventListener('click', generate);
+document.getElementById('downloadTxtBtn').addEventListener('click', downloadTxt);
+document.getElementById('downloadCsvBtn').addEventListener('click', downloadCsv);
+
+document.getElementById('langSelect').addEventListener('change', function() { setLang(this.value); });
+
+document.getElementById('exportTemplateBtn').addEventListener('click', function() {
+  var template = JSON.parse(JSON.stringify(I18N.en));
+  template._lang = '';
+  downloadFile(JSON.stringify(template, null, 2), 'pwgen-template.json', 'application/json');
+});
+
+document.getElementById('importLangBtn').addEventListener('click', function() { document.getElementById('langFileInput').click(); });
+document.getElementById('langFileInput').addEventListener('change', function() {
+  var file = this.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var langCode = loadCustomLang(e.target.result);
+    if (langCode) { setLang(langCode); }
+  };
+  reader.readAsText(file);
+  this.value = '';
+});
+
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); generate(); }
+});
+
+renderAll();
+``
+
+### types.js
+
+``javascript
+var TYPES = {
+  alfanumerisk: {
+    id: 'alfanumerisk', nameKey: 'typeAlfanumerisk', icon: '\uD83D\uDD24', categoryKey: 'catUserPasswords', popupKey: 'popupAlfanumerisk',
+    settings: [
+      { key: 'length', labelKey: 'labelLength', type: 'number', min: 8, max: 128, default: 16 },
+      { key: 'specialChars', labelKey: 'labelSpecialChars', type: 'toggle', default: true },
+      { key: 'dockerSafe', labelKey: 'labelDockerSafe', type: 'toggle', default: false }
+    ],
+    generate: function(s) {
+      var len = s.length || 16; var upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; var lower = 'abcdefghijklmnopqrstuvwxyz'; var digits = '0123456789';
+      var special = '!@#$%^&*()_+-=[]{}|;:,.<>?'; var dockerSafeSpecial = '-_./+@%^~';
+      var charset = upper + lower + digits;
+      if (s.specialChars) charset += s.dockerSafe ? dockerSafeSpecial : special;
+      var arr = new Uint32Array(len); crypto.getRandomValues(arr);
+      var result = ''; for (var i = 0; i < len; i++) result += charset[arr[i] % charset.length];
+      return [result];
+    }
+  },
+  passphrase: {
+    id: 'passphrase', nameKey: 'typePassphrase', icon: '\uD83D\uDCDD', categoryKey: 'catUserPasswords', popupKey: 'popupPassphrase',
+    settings: [
+      { key: 'wordCount', labelKey: 'labelWordCount', type: 'number', min: 3, max: 12, default: 5 },
+      { key: 'separator', labelKey: 'labelSeparator', type: 'select', options: ['-', '.', '_', ' '], default: '-' },
+      { key: 'language', labelKey: 'labelWordlist', type: 'select', options: ['optDanish', 'optEnglish', 'optCustom'], default: 'optDanish' }
+    ],
+    generate: function(s) {
+      var count = s.wordCount || 5; var sep = s.separator || '-';
+      var list;
+      if (s.language === 'optCustom' && state.customWordlist) list = state.customWordlist;
+      else if (s.language === 'optEnglish') list = WORDLIST_EN;
+      else list = WORDLIST_DA;
+      var arr = new Uint32Array(count); crypto.getRandomValues(arr);
+      var words = []; for (var i = 0; i < count; i++) words.push(list[arr[i] % list.length]);
+      return [words.join(sep)];
+    }
+  },
+  pinkode: {
+    id: 'pinkode', nameKey: 'typePinkode', icon: '\uD83D\uDD22', categoryKey: 'catUserPasswords', popupKey: 'popupPinkode',
+    settings: [{ key: 'length', labelKey: 'labelLength', type: 'number', min: 4, max: 8, default: 4 }],
+    generate: function(s) { var len = s.length || 4; var arr = new Uint32Array(len); crypto.getRandomValues(arr); var result = ''; for (var i = 0; i < len; i++) result += String(arr[i] % 10); return [result]; }
+  },
+  udtalevenligt: {
+    id: 'udtalevenligt', nameKey: 'typeUdtalevenligt', icon: '\uD83D\uDDE3\uFE0F', categoryKey: 'catUserPasswords', popupKey: 'popupUdtalevenligt',
+    settings: [{ key: 'syllables', labelKey: 'labelSyllables', type: 'number', min: 3, max: 8, default: 5 }],
+    generate: function(s) { var count = s.syllables || 5; var cons = 'bcdfghjklmnpqrstvwxyz'; var vows = 'aeiouy'; var arr = new Uint32Array(count * 2); crypto.getRandomValues(arr); var result = ''; for (var i = 0; i < count; i++) { result += cons[arr[i * 2] % cons.length]; result += vows[arr[i * 2 + 1] % vows.length]; } return [result]; }
+  },
+  otp: {
+    id: 'otp', nameKey: 'typeOtp', icon: '\u23F1\uFE0F', categoryKey: 'catUserPasswords', popupKey: 'popupOtp',
+    settings: [{ key: 'length', labelKey: 'labelLength', type: 'select', options: ['16', '32'], default: '32' }],
+    generate: function(s) { var len = parseInt(s.length || '32'); var base32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; var arr = new Uint8Array(len); crypto.getRandomValues(arr); var result = ''; for (var i = 0; i < len; i++) result += base32[arr[i] % 32]; return [result]; },
+    supportsQR: true,
+    getQRData: function(val) { return 'otpauth://totp/PasswordGenerator?secret=' + val + '&issuer=PasswordGenerator'; }
+  },
+  salt: {
+    id: 'salt', nameKey: 'typeSalt', icon: '\uD83E\uDDC2', categoryKey: 'catCryptoNoise', popupKey: 'popupSalt',
+    settings: [
+      { key: 'bytes', labelKey: 'labelBytes', type: 'select', options: ['16', '32', '64'], default: '32' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }
+    ],
+    generate: function(s) { var bytes = parseInt(s.bytes || '32'); var arr = new Uint8Array(bytes); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  pepper: {
+    id: 'pepper', nameKey: 'typePepper', icon: '\uD83C\uDF36\uFE0F', categoryKey: 'catCryptoNoise', popupKey: 'popupPepper',
+    settings: [
+      { key: 'bytes', labelKey: 'labelBytes', type: 'select', options: ['32', '64', '128'], default: '32' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }
+    ],
+    generate: function(s) { var bytes = parseInt(s.bytes || '32'); var arr = new Uint8Array(bytes); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  nonce: {
+    id: 'nonce', nameKey: 'typeNonce', icon: '\uD83C\uDFB2', categoryKey: 'catCryptoNoise', popupKey: 'popupNonce',
+    settings: [
+      { key: 'bytes', labelKey: 'labelBytes', type: 'select', options: ['12', '16'], default: '12' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }
+    ],
+    generate: function(s) { var bytes = parseInt(s.bytes || '12'); var arr = new Uint8Array(bytes); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  krypteringsnogle: {
+    id: 'krypteringsnogle', nameKey: 'typeKrypteringsnogle', icon: '\uD83D\uDD11', categoryKey: 'catCryptoNoise', popupKey: 'popupKrypteringsnogle',
+    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }],
+    generate: function(s) { var arr = new Uint8Array(32); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  apikey: {
+    id: 'apikey', nameKey: 'typeApikey', icon: '\uD83D\uDD17', categoryKey: 'catApiSecrets', popupKey: 'popupApikey',
+    settings: [
+      { key: 'prefix', labelKey: 'labelPrefix', type: 'text', default: '' },
+      { key: 'length', labelKey: 'labelLength', type: 'select', options: ['32', '48', '64'], default: '48' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optAlphanumeric', 'optHex'], default: 'optAlphanumeric' }
+    ],
+    generate: function(s) { var len = parseInt(s.length || '48'); var arr = new Uint8Array(len); crypto.getRandomValues(arr); var value; if (s.format === 'optHex') { value = ''; for (var i = 0; i < arr.length; i++) value += arr[i].toString(16).padStart(2, '0'); } else { var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; value = ''; for (var i = 0; i < arr.length; i++) value += chars[arr[i] % chars.length]; } return [(s.prefix || '') + value]; }
+  },
+  bearertoken: {
+    id: 'bearertoken', nameKey: 'typeBearertoken', icon: '\uD83C\uDFAB', categoryKey: 'catApiSecrets', popupKey: 'popupBearertoken',
+    settings: [
+      { key: 'length', labelKey: 'labelLength', type: 'select', options: ['32', '64', '128'], default: '64' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64URL'], default: 'optBase64URL' }
+    ],
+    generate: function(s) { var len = parseInt(s.length || '64'); var arr = new Uint8Array(len); crypto.getRandomValues(arr); if (s.format === 'optBase64URL') { var b64 = btoa(String.fromCharCode.apply(null, arr)); return [b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')]; } var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  jwtsecret: {
+    id: 'jwtsecret', nameKey: 'typeJwtsecret', icon: '\u270D\uFE0F', categoryKey: 'catApiSecrets', popupKey: 'popupJwtsecret',
+    settings: [
+      { key: 'bits', labelKey: 'labelBits', type: 'select', options: ['opt256bit', 'opt512bit'], default: 'opt256bit' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }
+    ],
+    generate: function(s) { var bytes = s.bits === 'opt512bit' ? 64 : 32; var arr = new Uint8Array(bytes); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  oauthsecret: {
+    id: 'oauthsecret', nameKey: 'typeOauthsecret', icon: '\uD83D\uDD10', categoryKey: 'catApiSecrets', popupKey: 'popupOauthsecret',
+    settings: [{ key: 'length', labelKey: 'labelLength', type: 'select', options: ['32', '48', '64'], default: '48' }],
+    generate: function(s) { var len = parseInt(s.length || '48'); var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; var arr = new Uint8Array(len); crypto.getRandomValues(arr); var value = ''; for (var i = 0; i < arr.length; i++) value += chars[arr[i] % chars.length]; return [value]; }
+  },
+  webhooksecret: {
+    id: 'webhooksecret', nameKey: 'typeWebhooksecret', icon: '\uD83E\uDE9D', categoryKey: 'catApiSecrets', popupKey: 'popupWebhooksecret',
+    settings: [
+      { key: 'length', labelKey: 'labelLength', type: 'select', options: ['32', '64'], default: '32' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }
+    ],
+    generate: function(s) { var len = parseInt(s.length || '32'); var arr = new Uint8Array(len); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  uuidv4: {
+    id: 'uuidv4', nameKey: 'typeUuidv4', icon: '\uD83C\uDD94', categoryKey: 'catIdentifiers', popupKey: 'popupUuidv4',
+    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optStandard', 'optNoDashes', 'optUppercase'], default: 'optStandard' }],
+    generate: function(s) { var arr = new Uint8Array(16); crypto.getRandomValues(arr); arr[6] = (arr[6] & 0x0f) | 0x40; arr[8] = (arr[8] & 0x3f) | 0x80; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); if (s.format === 'optNoDashes') return [hex]; var uuid = hex.slice(0,8) + '-' + hex.slice(8,12) + '-' + hex.slice(12,16) + '-' + hex.slice(16,20) + '-' + hex.slice(20); if (s.format === 'optUppercase') return [uuid.toUpperCase()]; return [uuid]; }
+  },
+  magiclink: {
+    id: 'magiclink', nameKey: 'typeMagiclink', icon: '\uD83D\uDD2E', categoryKey: 'catIdentifiers', popupKey: 'popupMagiclink',
+    settings: [
+      { key: 'length', labelKey: 'labelLength', type: 'select', options: ['32', '64', '128'], default: '64' },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64URL'], default: 'optBase64URL' }
+    ],
+    generate: function(s) { var len = parseInt(s.length || '64'); var arr = new Uint8Array(len); crypto.getRandomValues(arr); if (s.format === 'optBase64URL') { var b64 = btoa(String.fromCharCode.apply(null, arr)); return [b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')]; } var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+  },
+  recoverycode: {
+    id: 'recoverycode', nameKey: 'typeRecoverycode', icon: '\uD83D\uDEF1', categoryKey: 'catIdentifiers', popupKey: 'popupRecoverycode',
+    settings: [
+      { key: 'count', labelKey: 'labelCount', type: 'number', min: 5, max: 20, default: 10 },
+      { key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optDashFormat', 'optNoDashFormat'], default: 'optDashFormat' }
+    ],
+    generate: function(s) { var count = s.count || 10; var codes = []; var chars = '0123456789abcdef'; for (var c = 0; c < count; c++) { var arr = new Uint8Array(12); crypto.getRandomValues(arr); var hex = ''; for (var i = 0; i < arr.length; i++) hex += chars[arr[i] % 16]; if (s.format === 'optNoDashFormat') codes.push(hex); else codes.push(hex.slice(0,4) + '-' + hex.slice(4,8) + '-' + hex.slice(8,12)); } return codes; }
+  }
+};
+
+var CATEGORIES = [
+  { nameKey: 'catUserPasswords', types: ['alfanumerisk', 'passphrase', 'pinkode', 'udtalevenligt', 'otp'] },
+  { nameKey: 'catCryptoNoise', types: ['salt', 'pepper', 'nonce', 'krypteringsnogle'] },
+  { nameKey: 'catApiSecrets', types: ['apikey', 'bearertoken', 'jwtsecret', 'oauthsecret', 'webhooksecret'] },
+  { nameKey: 'catIdentifiers', types: ['uuidv4', 'magiclink', 'recoverycode'] }
+];
+``
+
+### i18n.js
+
+``javascript
+var I18N = {
+  da: {
+    appTitle: 'Password Generator', selectType: 'VÃ¦lg en type', history: 'Seneste', clearHistory: 'Ryd',
+    clearClipboard: 'Ryd udklipsholder', noHistory: 'Ingen historik endnu', settings: 'Indstillinger',
+    generate: 'GenerÃ©r', results: 'Genererede vÃ¦rdier', copy: 'KopiÃ©r', copied: 'Kopieret!',
+    emptyText: 'VÃ¦lg en password-type i menuen til venstre',
+    emptyHint: 'Alle passwords genereres kryptografisk sikkert med crypto.getRandomValues()',
+    favorites: 'Favoritter', language: 'Sprog', importLang: 'ImportÃ©r sprog', exportTemplate: 'EksportÃ©r skabelon',
+    bulkLabel: 'Antal:', downloadTxt: '.txt', downloadCsv: '.csv', downloadSvg: 'SVG', downloadPng: 'PNG', downloadPdf: 'PDF',
+    uploadWordlist: 'Upload ordliste (.txt)', customWordlist: 'Brugerdefineret', qrCode: 'QR kode',
+    catUserPasswords: 'Brugerrettede kodeord', catCryptoNoise: 'Kryptografisk stÃ¸j & hashes',
+    catApiSecrets: 'API- & systemhemmeligheder', catIdentifiers: 'Identifikatorer & tokens',
+    typeAlfanumerisk: 'Alfanumerisk', typePassphrase: 'Passphrase / Diceware', typePinkode: 'PIN-kode',
+    typeUdtalevenligt: 'Udtalevenligt', typeOtp: 'OTP / TOTP', typeSalt: 'Salt', typePepper: 'Pepper',
+    typeNonce: 'Nonce / IV', typeKrypteringsnogle: 'KrypteringsnÃ¸gle', typeApikey: 'API Key/Secret',
+    typeBearertoken: 'Bearer/Session Token', typeJwtsecret: 'JWT HMAC Secret', typeOauthsecret: 'OAuth Client Secret',
+    typeWebhooksecret: 'Webhook Secret', typeUuidv4: 'UUID v4', typeMagiclink: 'Magic Link / Reset Token',
+    typeRecoverycode: 'Recovery / Backup koder',
+    popupAlfanumerisk: 'TilfÃ¦ldige tegn (a-z, A-Z, 0-9). Brug til generelle adgangskoder og service-logins.',
+    popupPassphrase: 'Sammensatte ord. Lettere at huske end tilfÃ¦ldige tegn. God til hovedadgangskoder.',
+    popupPinkode: 'Kun tal. Bruges til hurtig adgang, f.eks. skÃ¦rmlÃ¥s eller betalingskort.',
+    popupUdtalevenligt: 'Fonetiske stavelser der kan udtales. God nÃ¥r passwords skal kommunikeres mundtligt.',
+    popupOtp: 'Base32 nÃ¸gle til engangskoder (Google Authenticator, Authy). 16-32 tegn.',
+    popupSalt: 'Kryptografisk tilfÃ¦ldig vÃ¦rdi tilfÃ¸jet fÃ¸r hashing for at forhindre rainbow table-angreb.',
+    popupPepper: 'Hemmelig systemvÃ¦rdi tilfÃ¸jet under hashing. Adskilt fra databasen.',
+    popupNonce: 'EngangsvÃ¦rdi brugt i kryptering. MÃ¥ aldrig genbruges med samme nÃ¸gle.',
+    popupKrypteringsnogle: '256-bit AES nÃ¸gle til symmetrisk kryptering. Holdes absolut hemmelig.',
+    popupApikey: 'NÃ¸gle til API-adgang. Holdes hemmelig. Sendes typisk i HTTP headers.',
+    popupBearertoken: 'Session-token til autentificering. URL-sikker. Har typisk begrÃ¦nset levetid.',
+    popupJwtsecret: 'Hemmelighed til signering af JSON Web Tokens. Beskytter mod forfalskning.',
+    popupOauthsecret: 'Klienthemmelighed til OAuth 2.0 flows. Aldrig eksponeret i frontend-kode.',
+    popupWebhooksecret: 'HMAC-nÃ¸gle til at verificere at webhook-requests kommer fra den rigtige afsender.',
+    popupUuidv4: 'Universelt unik identifikator. TilfÃ¦ldig. Bruges til database-ID\'er, sporingsnumre.',
+    popupMagiclink: 'Engangstoken sendt via email til adgangskodefri login. UdlÃ¸ber typisk efter 15-60 min.',
+    popupRecoverycode: 'Backup-kode til kontogendannelse. Printes og opbevares sikkert offline.',
+    labelLength: 'LÃ¦ngde', labelSpecialChars: 'Specialtegn', labelDockerSafe: 'Docker/.env-safe',
+    labelWordCount: 'Antal ord', labelSeparator: 'Separator', labelWordlist: 'Ordliste',
+    labelSyllables: 'Antal stavelser', labelBytes: 'LÃ¦ngde (bytes)', labelFormat: 'Format',
+    labelPrefix: 'Prefix', labelBits: 'StÃ¸rrelse', labelCount: 'Antal koder',
+    optDanish: 'Dansk', optEnglish: 'Engelsk', optStandard: 'Standard', optNoDashes: 'Uden bindestreger',
+    optUppercase: 'Uppercase', optAlphanumeric: 'Alfanumerisk', optHex: 'Hex', optBase64: 'Base64',
+    optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
+    optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
+    wordlistLoaded: 'IndlÃ¦st: ', wordlistNone: 'Standard', clipboardCleared: 'Udklipsholder ryddet!',
+    optCustom: 'Brugerdefineret'
+  },
+  en: {
+    appTitle: 'Password Generator', selectType: 'Select a type', history: 'Recent', clearHistory: 'Clear',
+    clearClipboard: 'Clear clipboard', noHistory: 'No history yet', settings: 'Settings',
+    generate: 'Generate', results: 'Generated Values', copy: 'Copy', copied: 'Copied!',
+    emptyText: 'Select a password type from the menu',
+    emptyHint: 'All passwords are generated cryptographically secure with crypto.getRandomValues()',
+    favorites: 'Favorites', language: 'Language', importLang: 'Import language', exportTemplate: 'Export template',
+    bulkLabel: 'Count:', downloadTxt: '.txt', downloadCsv: '.csv', downloadSvg: 'SVG', downloadPng: 'PNG', downloadPdf: 'PDF',
+    uploadWordlist: 'Upload wordlist (.txt)', customWordlist: 'Custom', qrCode: 'QR Code',
+    catUserPasswords: 'User-facing Passwords', catCryptoNoise: 'Cryptographic Noise & Hashes',
+    catApiSecrets: 'API & System Secrets', catIdentifiers: 'Identifiers & Tokens',
+    typeAlfanumerisk: 'Alphanumeric', typePassphrase: 'Passphrase / Diceware', typePinkode: 'PIN Code',
+    typeUdtalevenligt: 'Pronounceable', typeOtp: 'OTP / TOTP', typeSalt: 'Salt', typePepper: 'Pepper',
+    typeNonce: 'Nonce / IV', typeKrypteringsnogle: 'Encryption Key', typeApikey: 'API Key/Secret',
+    typeBearertoken: 'Bearer/Session Token', typeJwtsecret: 'JWT HMAC Secret', typeOauthsecret: 'OAuth Client Secret',
+    typeWebhooksecret: 'Webhook Secret', typeUuidv4: 'UUID v4', typeMagiclink: 'Magic Link / Reset Token',
+    typeRecoverycode: 'Recovery / Backup Codes',
+    popupAlfanumerisk: 'Random characters (a-z, A-Z, 0-9). Use for general passwords and service logins.',
+    popupPassphrase: 'Combined words. Easier to remember than random characters. Good for master passwords.',
+    popupPinkode: 'Numbers only. Used for quick access, e.g. screen lock or payment cards.',
+    popupUdtalevenligt: 'Phonetic syllables that can be pronounced. Good when passwords need to be communicated verbally.',
+    popupOtp: 'Base32 key for one-time codes (Google Authenticator, Authy). 16-32 characters.',
+    popupSalt: 'Cryptographically random value added before hashing to prevent rainbow table attacks.',
+    popupPepper: 'Secret system value added during hashing. Separate from the database.',
+    popupNonce: 'One-time value used in encryption. Must never be reused with the same key.',
+    popupKrypteringsnogle: '256-bit AES key for symmetric encryption. Keep absolutely secret.',
+    popupApikey: 'Key for API access. Keep secret. Typically sent in HTTP headers.',
+    popupBearertoken: 'Session token for authentication. URL-safe. Typically has limited lifetime.',
+    popupJwtsecret: 'Secret for signing JSON Web Tokens. Protects against forgery.',
+    popupOauthsecret: 'Client secret for OAuth 2.0 flows. Never exposed in frontend code.',
+    popupWebhooksecret: 'HMAC key to verify that webhook requests come from the right sender.',
+    popupUuidv4: 'Universally unique identifier. Random. Used for database IDs, tracking numbers.',
+    popupMagiclink: 'One-time token sent via email for passwordless login. Typically expires after 15-60 min.',
+    popupRecoverycode: 'Backup code for account recovery. Print and store safely offline.',
+    labelLength: 'Length', labelSpecialChars: 'Special characters', labelDockerSafe: 'Docker/.env-safe',
+    labelWordCount: 'Word count', labelSeparator: 'Separator', labelWordlist: 'Word list',
+    labelSyllables: 'Syllable count', labelBytes: 'Length (bytes)', labelFormat: 'Format',
+    labelPrefix: 'Prefix', labelBits: 'Size', labelCount: 'Code count',
+    optDanish: 'Danish', optEnglish: 'English', optStandard: 'Standard', optNoDashes: 'Without dashes',
+    optUppercase: 'Uppercase', optAlphanumeric: 'Alphanumeric', optHex: 'Hex', optBase64: 'Base64',
+    optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
+    optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
+    wordlistLoaded: 'Loaded: ', wordlistNone: 'Default', clipboardCleared: 'Clipboard cleared!',
+    optCustom: 'Custom'
+  }
+};
+
+var LANG = localStorage.getItem('pwgen_lang') || 'da';
+function t(k) { return (I18N[LANG] && I18N[LANG][k]) || (I18N.en && I18N.en[k]) || k; }
+function setLang(lang) { LANG = lang; localStorage.setItem('pwgen_lang', lang); renderAll(); }
+
+function loadCustomLang(jsonStr) {
+  try {
+    var data = JSON.parse(jsonStr);
+    var langCode = data._lang || 'custom';
+    if (!I18N[langCode]) I18N[langCode] = {};
+    var enKeys = Object.keys(I18N.en);
+    var missing = [];
+    for (var i = 0; i < enKeys.length; i++) {
+      if (data[enKeys[i]]) I18N[langCode][enKeys[i]] = data[enKeys[i]];
+      else missing.push(enKeys[i]);
+    }
+    if (missing.length > 0) { alert('Manglende nÃ¸gler: ' + missing.join(', ')); return false; }
+    localStorage.setItem('pwgen_custom_lang_' + langCode, jsonStr);
+    return langCode;
+  } catch(e) { alert('Ugyldig JSON: ' + e.message); return false; }
+}
+
+function getCustomLangs() {
+  var langs = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (key.indexOf('pwgen_custom_lang_') === 0) langs.push(key.replace('pwgen_custom_lang_', ''));
+  }
+  return langs;
+}
+
+function loadAllCustomLangs() {
+  var langs = getCustomLangs();
+  for (var i = 0; i < langs.length; i++) {
+    var data = JSON.parse(localStorage.getItem('pwgen_custom_lang_' + langs[i]));
+    if (!I18N[langs[i]]) I18N[langs[i]] = data;
+  }
+}
+loadAllCustomLangs();
+``
+
+### qr.js
+
+``javascript
+var QR = (function() {
+  var gf = { exp: new Array(512), log: new Array(256) };
+  for (var i = 0, x = 1; i < 255; i++) { gf.exp[i] = x; gf.log[x] = i; x = (x << 1) ^ (x & 0x80 ? 0x11d : 0); }
+  for (var i = 255; i < 512; i++) gf.exp[i] = gf.exp[i - 255];
+  function gfMul(a, b) { if (a === 0 || b === 0) return 0; return gf.exp[gf.log[a] + gf.log[b]]; }
+  function genPoly(deg) { var p = [1]; for (var i = 0; i < deg; i++) { p.push(0); for (var j = p.length - 1; j > 0; j--) p[j] = p[j - 1] ^ gfMul(p[j], gf.exp[i]); p[0] = gfMul(p[0], gf.exp[i]); } return p; }
+  var EC_BLOCKS = {1:{M:[16,10,0]},2:{M:[28,16,0]},3:{M:[44,26,0]},4:{M:[64,36,0]},5:{M:[86,48,0]},6:{M:[108,64,0]}};
+  var ALIGN = {1:[],2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34]};
+  function getVersion(dataLen) { for (var v = 1; v <= 6; v++) { if (dataLen <= EC_BLOCKS[v].M[0]) return v; } return 6; }
+  function encode(data) {
+    var bytes = []; for (var i = 0; i < data.length; i++) bytes.push(data.charCodeAt(i) & 0xff);
+    var ver = getVersion(bytes.length);
+    var cap = EC_BLOCKS[ver].M;
+    var total = cap[0], ecWords = cap[1], dataWords = total - ecWords;
+    var bits = []; bits.push(0,1,0,0); var len = bytes.length; for (var i = 7; i >= 0; i--) bits.push((len >> i) & 1);
+    for (var i = 0; i < bytes.length; i++) for (var j = 7; j >= 0; j--) bits.push((bytes[i] >> j) & 1);
+    bits.push(0,0,0,0); while (bits.length % 8 !== 0) bits.push(0);
+    var pad = [0xec,0x11]; var pi = 0; while (bits.length / 8 < total) { for (var j = 7; j >= 0; j--) bits.push((pad[pi] >> j) & 1); pi = (pi + 1) % 2; }
+    var msg = []; for (var i = 0; i < bits.length; i += 8) { var b = 0; for (var j = 0; j < 8; j++) b = (b << 1) | bits[i + j]; msg.push(b); }
+    var gp = genPoly(ecWords);
+    var ec = new Array(ecWords).fill(0);
+    for (var i = 0; i < msg.length; i++) { var fb = msg[i] ^ ec[0]; ec.shift(); ec.push(0); if (fb !== 0) for (var j = 0; j < ec.length; j++) ec[j] ^= gfMul(gp[j], fb); }
+    return { version: ver, codewords: msg.concat(ec), size: ver * 4 + 17 };
+  }
+  function makeMatrix(size) { var m = []; for (var i = 0; i < size; i++) { m[i] = []; for (var j = 0; j < size; j++) m[i][j] = -1; } return m; }
+  function placeFinder(m, r, c) { for (var i = -1; i <= 7; i++) for (var j = -1; j <= 7; j++) { if (r + i < 0 || c + j < 0 || r + i >= m.length || c + j >= m.length) continue; m[r + i][c + j] = (i >= 0 && i <= 6 && j >= 0 && j <= 6 && (i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4))) ? 1 : 0; } }
+  function placeAlign(m, r, c) { for (var i = -2; i <= 2; i++) for (var j = -2; j <= 2; j++) { if (r + i < 0 || c + j < 0 || r + i >= m.length || c + j >= m.length) continue; m[r + i][c + j] = (i === -2 || i === 2 || j === -2 || j === 2 || (i === 0 && j === 0)) ? 1 : 0; } }
+  function generate(data) {
+    var enc = encode(data);
+    var size = enc.size, ver = enc.version;
+    var m = makeMatrix(size);
+    placeFinder(m, 0, 0); placeFinder(m, 0, size - 7); placeFinder(m, size - 7, 0);
+    var aligns = ALIGN[ver];
+    for (var ai = 0; ai < aligns.length; ai++) for (var aj = 0; aj < aligns.length; aj++) {
+      var ar = aligns[ai], ac = aligns[aj];
+      if (!((ar === 6 && ac === 6) || (ar === 6 && ac === size - 7) || (ar === size - 7 && ac === 6))) placeAlign(m, ar, ac);
+    }
+    for (var i = 8; i < size - 8; i++) m[i][6] = m[6][i] = (i % 2 === 0) ? 1 : 0;
+    m[size - 8][8] = 1;
+    var bits = []; for (var i = 0; i < enc.codewords.length; i++) for (var j = 7; j >= 0; j--) bits.push((enc.codewords[i] >> j) & 1);
+    var bi = 0, up = true;
+    for (var col = size - 1; col >= 0; col -= 2) {
+      if (col === 6) col = 5;
+      for (var row = up ? size - 1 : 0; up ? row >= 0 : row < size; row += up ? -1 : 1) {
+        for (var k = 0; k < 2; k++) {
+          var c = col - k;
+          if (c < 0 || row < 0 || row >= size) continue;
+          if (m[row][c] === -1) { m[row][c] = bi < bits.length ? bits[bi] : 0; bi++; }
+        }
+      }
+      up = !up;
+    }
+    var masks = [function(r,c){return(r+c)%2===0;},function(r,c){return r%2===0;},function(r,c){return c%3===0;},function(r,c){return(r+c)%3===0;},function(r,c){return(Math.floor(r/2)+Math.floor(c/3))%2===0;},function(r,c){return((r*c)%2)+((r*c)%3)===0;},function(r,c){return(((r*c)%2)+((r*c)%3))%2===0;},function(r,c){return(((r+c)%2)+((r*c)%3))%2===0;}];
+    var bestMask = 0, bestScore = Infinity;
+    for (var mi = 0; mi < 8; mi++) {
+      var test = []; for (var r = 0; r < size; r++) { test[r] = []; for (var c = 0; c < size; c++) test[r][c] = m[r][c]; }
+      for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (test[r][c] >= 0) test[r][c] = test[r][c] ^ (masks[mi](r, c) ? 1 : 0);
+      var score = 0;
+      for (var r = 0; r < size; r++) { var run = 0; for (var c = 0; c < size; c++) { if (test[r][c] === 1) run++; else { if (run >= 5) score += 3 + (run - 5); run = 0; } } if (run >= 5) score += 3 + (run - 5); }
+      for (var c = 0; c < size; c++) { var run = 0; for (var r = 0; r < size; r++) { if (test[r][c] === 1) run++; else { if (run >= 5) score += 3 + (run - 5); run = 0; } } if (run >= 5) score += 3 + (run - 5); }
+      for (var r = 0; r < size - 1; r++) for (var c = 0; c < size - 1; c++) { var b1 = test[r][c], b2 = test[r][c+1], b3 = test[r+1][c], b4 = test[r+1][c+1]; if (b1 === b2 && b2 === b3 && b3 === b4) score += 3; }
+      for (var r = 0; r < size; r++) for (var c = 0; c < size - 10; c++) { var pat = true; for (var k = 0; k < 11; k++) if (test[r][c+k] !== [1,0,1,1,1,0,1,0,0,0,0][k]) { pat = false; break; } if (pat) score += 40; }
+      for (var c = 0; c < size; c++) for (var r = 0; r < size - 10; r++) { var pat = true; for (var k = 0; k < 11; k++) if (test[r+k][c] !== [1,0,1,1,1,0,1,0,0,0,0][k]) { pat = false; break; } if (pat) score += 40; }
+      var dark = 0; for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (test[r][c] === 1) dark++;
+      var pct = dark / (size * size) * 100;
+      score += Math.abs(Math.floor(pct / 5) - 10) * 10;
+      if (score < bestScore) { bestScore = score; bestMask = mi; }
+    }
+    for (var r = 0; r < size; r++) for (var c = 0; c < size; c++) if (m[r][c] >= 0) m[r][c] = m[r][c] ^ (masks[bestMask](r, c) ? 1 : 0);
+    var fmt = (1 << 14) | (bestMask << 13);
+    var fmtBits = []; for (var i = 14; i >= 0; i--) fmtBits.push((fmt >> i) & 1);
+    var fmtPoly = [1,0,1,0,0,1,1,0,1,1,1];
+    var fmtEc = fmtBits.slice();
+    for (var i = 0; i <= 14 - 10; i++) { if (fmtEc[i] === 1) for (var j = 0; j < 11; j++) fmtEc[i + j] ^= fmtPoly[j]; }
+    var finalFmt = fmtBits.slice(0, 5).concat(fmtEc.slice(5, 15));
+    var fmtPos = [[8,0],[8,1],[8,2],[8,3],[8,4],[8,5],[8,7],[8,8],[7,8],[5,8],[4,8],[3,8],[2,8],[1,8],[0,8]];
+    for (var i = 0; i < 15; i++) { var r = fmtPos[i][0], c = fmtPos[i][1]; m[r][c] = finalFmt[i]; }
+    var fmtPos2 = [[size-1,8],[size-2,8],[size-3,8],[size-4,8],[size-5,8],[size-6,8],[size-7,8],[size-8,8],[8,size-8],[8,size-7],[8,size-6],[8,size-5],[8,size-4],[8,size-3],[8,size-2]];
+    for (var i = 0; i < 15; i++) { var r = fmtPos2[i][0], c = fmtPos2[i][1]; m[r][c] = finalFmt[i]; }
+    return { matrix: m, size: size };
+  }
+  function toSVG(matrix, size, moduleSize, margin) {
+    moduleSize = moduleSize || 4; margin = margin || 2;
+    var total = (size + 2 * margin) * moduleSize;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + total + '" height="' + total + '" viewBox="0 0 ' + total + ' ' + total + '"><rect width="' + total + '" height="' + total + '" fill="#fff"/>';
+    for (var r = 0; r < size; r++) {
+      for (var c = 0; c < size; c++) {
+        if (matrix[r][c] === 1) {
+          var x = (c + margin) * moduleSize, y = (r + margin) * moduleSize;
+          svg += '<rect x="' + x + '" y="' + y + '" width="' + moduleSize + '" height="' + moduleSize + '" fill="#000"/>';
+        }
+      }
+    }
+    svg += '</svg>';
+    return svg;
+  }
+  function svgToPngDataUrl(svgString, width, height, callback) {
+    var canvas = document.createElement('canvas');
+    canvas.width = width; canvas.height = height;
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.onload = function() { ctx.drawImage(img, 0, 0); callback(canvas.toDataURL('image/png')); };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+  }
+  function downloadBlob(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+  function downloadSVG(svgString, filename) { downloadBlob(svgString, filename, 'image/svg+xml'); }
+  function downloadPNG(svgString, filename) {
+    var total = 200;
+    svgToPngDataUrl(svgString, total, total, function(dataUrl) {
+      var a = document.createElement('a');
+      a.href = dataUrl; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+    });
+  }
+  function downloadPDF(svgString, filename) {
+    var total = 200;
+    svgToPngDataUrl(svgString, total, total, function(dataUrl) {
+      var pngData = dataUrl.split(',')[1];
+      var pdf = '%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids [3 0 R]\n/Count 1\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 ' + total + ' ' + total + ']\n/Contents 4 0 R\n/Resources << /XObject << /Img 5 0 R >> >>\n>>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nq\n' + total + ' 0 0 ' + total + ' 0 0 cm\n/Img Do\nQ\nendstream\nendobj\n5 0 obj\n<<\n/Type /XObject\n/Subtype /Image\n/Width ' + total + '\n/Height ' + total + '\n/ColorSpace /DeviceRGB\n/BitsPerComponent 8\n/Filter /DCTDecode\n/Length ' + pngData.length + '\n>>\nstream\n' + pngData + '\nendstream\nendobj\nxref\n0 6\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \n0000000266 00000 n \n0000000360 00000 n \ntrailer\n<<\n/Size 6\n/Root 1 0 R\n>>\nstartxref\n' + (500 + pngData.length) + '\n%%EOF';
+      downloadBlob(pdf, filename, 'application/pdf');
+    });
+  }
+  return { generate: generate, toSVG: toSVG, downloadSVG: downloadSVG, downloadPNG: downloadPNG, downloadPDF: downloadPDF };
+})();
+``
+
+### wordlists.js (truncated — full wordlists contain ~1000+ words each)
+
+``javascript
+var WORDLIST_DA = [/* ~1000 Danish words */];
+var WORDLIST_EN = [/* ~1000 English words */];
+// Full wordlists available in the repository at password-generator/wordlists.js
+``
+
+---
+
+## Repository Metadata
+
+# GitHub Repository Metadata
+
+> Copy these values directly into the GitHub repository settings.
+
+## Description (About)
+
+```
+Cryptographically secure password, token, and secret generator. Single-file HTML app with zero dependencies, powered by vanilla JavaScript and crypto.getRandomValues().
+```
+
+## Topic Tags
+
+Add these topics on the repository page (click the gear icon next to "About"):
+
+```
+password-generator
+security-tools
+cryptography
+vanilla-javascript
+static-site
+devtools
+privacy
+open-source
+passphrase
+otp
+uuid
+api-key
+jwt
+oauth
+webhook
+```
+
+## Website
+
+If GitHub Pages is enabled, link: `https://<username>.github.io/password-generator/`
+

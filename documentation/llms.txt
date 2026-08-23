@@ -1,0 +1,125 @@
+# Password Generator - AI Documentation (llms.txt)
+
+> Concise reference for AI coding assistants (Cursor, Copilot, Claude Code). Load this file to understand the project structure and conventions.
+
+## Project Overview
+
+A zero-dependency, single-page password, token, and secret generator. Vanilla HTML/CSS/JS. All random values use `crypto.getRandomValues()`. Dark-themed responsive UI with i18n support (Danish/English).
+
+## File Structure
+
+```
+password-generator/
+├── index.html          # Entry point. HTML structure + embedded CSS (176 lines)
+├── app.js              # State management, UI rendering, event handling (350 lines)
+├── types.js            # Type definitions, categories, generation functions (149 lines)
+├── wordlists.js        # WORDLIST_DA (~1000 words) + WORDLIST_EN (~1000 words)
+├── i18n.js             # I18N object (da/en), t() helper, custom language loader (131 lines)
+└── qr.js               # Standalone QR code generator, SVG/PNG/PDF output (133 lines)
+```
+
+## Load Order
+
+Scripts must load in this order: `i18n.js` → `wordlists.js` → `qr.js` → `types.js` → `app.js`
+
+`i18n.js` must load first because `types.js` calls `t()` at module level (not recommended but current behavior). `app.js` calls `renderAll()` at end-of-file which bootstraps the entire UI.
+
+## Global Namespace
+
+All scripts use global `var` declarations — no ES modules, no bundler:
+
+- `var I18N` — translation dictionary (da, en)
+- `var LANG` — current language code
+- `var t(k)` — translate function
+- `var setLang(lang)` — switch language
+- `var TYPES` — password type registry
+- `var CATEGORIES` — category array with type references
+- `var WORDLIST_DA`, `var WORDLIST_EN` — word lists
+- `var QR` — QR code generator namespace
+- `var state` — central application state
+
+## State Object (app.js)
+
+```js
+var state = {
+  selectedType: null,        // currently selected type ID (string from TYPES keys)
+  settings: {},              // current settings {key: value} for selected type
+  history: [],               // last 5 entries [{typeId, typeName, values, settings, timestamp}]
+  results: [],               // currently displayed generated values (strings)
+  favorites: [],             // favorited type IDs (persisted to localStorage)
+  customWordlist: null,      // uploaded word array or null
+  customWordlistName: null   // filename of uploaded wordlist
+};
+```
+
+## Type Definition Schema (types.js)
+
+Each type in `TYPES` follows this structure:
+
+```js
+{
+  id: 'string',              // unique key
+  nameKey: 'translationKey', // i18n key for display name
+  icon: 'emoji',             // unicode emoji or escape sequence
+  categoryKey: 'catKey',     // i18n key for category name
+  popupKey: 'popupKey',      // i18n key for hover tooltip
+  settings: [                // array of setting definitions
+    {
+      key: 'settingName',    // stored key in state.settings
+      labelKey: 'i18nKey',   // i18n key for label
+      type: 'number|select|toggle|text',
+      // type-specific:
+      min: 0, max: 100,      // for number
+      options: ['opt1', 'opt2'],  // for select
+      default: value         // default value
+    }
+  ],
+  generate: function(settings) { return [string, ...]; },  // returns array of strings
+  supportsQR: true,          // optional: show QR code for first result
+  getQRData: function(value) { return 'otpauth://...'; }   // optional: QR data string
+}
+```
+
+## Categories Schema
+
+```js
+var CATEGORIES = [
+  { nameKey: 'catKey', types: ['typeId1', 'typeId2', ...] },
+  ...
+];
+```
+
+Each category references its types by their TYPES key. Order in `CATEGORIES` determines sidebar order.
+
+## Render Pipeline
+
+`renderAll()` (app.js line 292) orchestrates all rendering:
+1. `updateLangSelect()` — rebuild language dropdown
+2. `renderTypeList()` — rebuild sidebar (favorites first, then categories)
+3. `renderSettings()` — rebuild settings grid for selected type
+4. `renderResults()` — rebuild results list with copy/QR/download buttons
+5. `renderHistory()` — rebuild history list
+6. Update title text and empty state
+
+## Key Conventions
+
+- All generation functions accept a `settings` object (key-value pairs from the UI) and return `string[]`.
+- Translation keys for options use `optXxx` prefix. Type names use `typeXxx`. Category names use `catXxx`.
+- Settings with `type: 'select'` use translation keys as option values (not the display text).
+- `localStorage` keys are prefixed with `pwgen_` to avoid collisions.
+- QR code SVG is rendered inline as DOM string, not via `<img>` tag.
+- History items encode settings as `encodeURIComponent(JSON.stringify(...))` in a `data-settings` attribute.
+- The hover popup uses `data-popup` attribute with pre-translated text (escaped for HTML).
+- UUID v4 follows RFC 4122: version 4 (bits 48-51 = `0100`) and variant 1 (bits 64-65 = `10`).
+
+## Extension Points
+
+To add a new password type:
+1. Add an entry to `TYPES` in `types.js` with all required fields.
+2. Add translation keys to `I18N.da` and `I18N.en` in `i18n.js` (name, popup, settings labels/options).
+3. Add the type ID to the appropriate category in `CATEGORIES`.
+
+To add a new language:
+1. Add a new object under `I18N` (e.g., `I18N.fr = { ... }`).
+2. Translate all keys — use `I18N.en` as the reference for required keys.
+3. Add the language to the `<select>` in `index.html` or use the Import Language feature.
