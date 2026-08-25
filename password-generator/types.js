@@ -77,8 +77,24 @@ var TYPES = {
   },
   krypteringsnogle: {
     id: 'krypteringsnogle', nameKey: 'typeKrypteringsnogle', icon: '\uD83D\uDD11', categoryKey: 'catCryptoNoise', popupKey: 'popupKrypteringsnogle',
-    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }],
-    generate: function(s) { var arr = new Uint8Array(32); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64', 'optAes256Cbc', 'optAes256Gcm'], default: 'optHex' }],
+    generate: function(s) {
+      var key = new Uint8Array(32); crypto.getRandomValues(key);
+      if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, key))];
+      if (s.format === 'optAes256Cbc') {
+        var iv = new Uint8Array(16); crypto.getRandomValues(iv);
+        var keyHex = ''; for (var i = 0; i < key.length; i++) keyHex += key[i].toString(16).padStart(2, '0');
+        var ivHex = ''; for (var i = 0; i < iv.length; i++) ivHex += iv[i].toString(16).padStart(2, '0');
+        return ['KEY=' + keyHex, 'IV=' + ivHex];
+      }
+      if (s.format === 'optAes256Gcm') {
+        var nonce = new Uint8Array(12); crypto.getRandomValues(nonce);
+        var keyHex = ''; for (var i = 0; i < key.length; i++) keyHex += key[i].toString(16).padStart(2, '0');
+        var nonceHex = ''; for (var i = 0; i < nonce.length; i++) nonceHex += nonce[i].toString(16).padStart(2, '0');
+        return ['KEY=' + keyHex, 'NONCE=' + nonceHex];
+      }
+      var hex = ''; for (var i = 0; i < key.length; i++) hex += key[i].toString(16).padStart(2, '0'); return [hex];
+    }
   },
   apikey: {
     id: 'apikey', nameKey: 'typeApikey', icon: '\uD83D\uDD17', categoryKey: 'catApiSecrets', popupKey: 'popupApikey',

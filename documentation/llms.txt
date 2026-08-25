@@ -10,12 +10,22 @@ A zero-dependency, single-page password, token, and secret generator. Vanilla HT
 
 ```
 password-generator/
-├── index.html          # Entry point. HTML structure + embedded CSS (176 lines)
-├── app.js              # State management, UI rendering, event handling (350 lines)
-├── types.js            # Type definitions, categories, generation functions (149 lines)
+├── index.html          # Entry point. HTML structure + embedded CSS (254 lines)
+├── app.js              # State management, UI rendering, event handling (331 lines)
+├── types.js            # Type definitions, categories, generation functions (164 lines)
 ├── wordlists.js        # WORDLIST_DA (~1000 words) + WORDLIST_EN (~1000 words)
-├── i18n.js             # I18N object (da/en), t() helper, custom language loader (131 lines)
+├── i18n.js             # I18N object (da/en), t() helper, custom language loader (129 lines)
 └── qr.js               # Standalone QR code generator, SVG/PNG/PDF output (133 lines)
+
+documentation/
+├── README.md           # Full project README with embedded screenshots
+├── llms.txt            # This file
+├── llms-full.txt       # Complete documentation corpus with source code
+├── password-generator-01-alphanumeric.png   # Screenshot: alphanumeric
+├── password-generator-02-passphrase.png     # Screenshot: passphrase
+├── password-generator-03-pin-code.png       # Screenshot: PIN code
+├── password-generator-04-otp-totp.png       # Screenshot: OTP/TOTP
+└── password-generator-05-bulk.png           # Screenshot: bulk generation
 ```
 
 ## Load Order
@@ -111,6 +121,8 @@ Each category references its types by their TYPES key. Order in `CATEGORIES` det
 - History items encode settings as `encodeURIComponent(JSON.stringify(...))` in a `data-settings` attribute.
 - The hover popup uses `data-popup` attribute with pre-translated text (escaped for HTML).
 - UUID v4 follows RFC 4122: version 4 (bits 48-51 = `0100`) and variant 1 (bits 64-65 = `10`).
+- Zoom toggle uses `body.large` CSS class with overrides for all component sizes. Preference stored in `localStorage` key `pwgen_zoom`.
+- Encryption Key type supports AES-256-CBC (outputs KEY + IV) and AES-256-GCM (outputs KEY + NONCE) as separate result lines.
 
 ## Extension Points
 

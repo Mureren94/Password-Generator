@@ -41,6 +41,7 @@ var I18N = {
     optUppercase: 'Uppercase', optAlphanumeric: 'Alfanumerisk', optHex: 'Hex', optBase64: 'Base64',
     optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
     optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
+    optAes256Cbc: 'AES-256-CBC', optAes256Gcm: 'AES-256-GCM',
     wordlistLoaded: 'Indlæst: ', wordlistNone: 'Standard', clipboardCleared: 'Udklipsholder ryddet!',
     optCustom: 'Brugerdefineret'
   },
@@ -86,6 +87,7 @@ var I18N = {
     optUppercase: 'Uppercase', optAlphanumeric: 'Alphanumeric', optHex: 'Hex', optBase64: 'Base64',
     optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
     optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
+    optAes256Cbc: 'AES-256-CBC', optAes256Gcm: 'AES-256-GCM',
     wordlistLoaded: 'Loaded: ', wordlistNone: 'Default', clipboardCleared: 'Clipboard cleared!',
     optCustom: 'Custom'
   }

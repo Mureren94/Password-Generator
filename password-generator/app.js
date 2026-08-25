@@ -138,9 +138,9 @@ function renderTypeList() {
       popup.classList.add('visible');
     });
     item.addEventListener('mousemove', function(e) {
-      var x = e.clientX + 12, y = e.clientY + 12;
-      if (x + 280 > window.innerWidth) x = e.clientX - 292;
-      if (y + 80 > window.innerHeight) y = e.clientY - 90;
+var x = e.clientX + 10, y = e.clientY + 10;
+if (x + 240 > window.innerWidth) x = e.clientX - 250;
+if (y + 60 > window.innerHeight) y = e.clientY - 70;
       popup.style.left = x + 'px'; popup.style.top = y + 'px';
     });
     item.addEventListener('mouseleave', function() { popup.classList.remove('visible'); });
@@ -248,9 +248,9 @@ function renderResults() {
     var type = TYPES[state.selectedType];
     var qrData = type.getQRData(state.results[0]);
     var qr = QR.generate(qrData);
-    var svg = QR.toSVG(qr.matrix, qr.size, 3, 2);
+    var svg = QR.toSVG(qr.matrix, qr.size, 2, 1);
     qrContainer.style.display = 'block';
-    qrContainer.innerHTML = '<h4 style="margin-bottom:8px;color:var(--text-secondary);font-size:12px;">' + t('qrCode') + '</h4><div>' + svg + '</div><div class="qr-dl-btns"><button class="qr-dl-btn" id="qrSvgBtn">' + t('downloadSvg') + '</button><button class="qr-dl-btn" id="qrPngBtn">' + t('downloadPng') + '</button><button class="qr-dl-btn" id="qrPdfBtn">' + t('downloadPdf') + '</button></div>';
+    qrContainer.innerHTML = '<h4 style="margin-bottom:4px;color:var(--text-secondary);font-size:10px;">' + t('qrCode') + '</h4><div>' + svg + '</div><div class="qr-dl-btns"><button class="qr-dl-btn" id="qrSvgBtn">' + t('downloadSvg') + '</button><button class="qr-dl-btn" id="qrPngBtn">' + t('downloadPng') + '</button><button class="qr-dl-btn" id="qrPdfBtn">' + t('downloadPdf') + '</button></div>';
     document.getElementById('qrSvgBtn').addEventListener('click', function() { QR.downloadSVG(svg, 'otp-qr.svg'); });
     document.getElementById('qrPngBtn').addEventListener('click', function() { QR.downloadPNG(svg, 'otp-qr.png'); });
     document.getElementById('qrPdfBtn').addEventListener('click', function() { QR.downloadPDF(svg, 'otp-qr.pdf'); });
@@ -347,4 +347,16 @@ document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); generate(); }
 });
 
+var ZOOM_KEY = 'pwgen_zoom';
+function applyZoom() {
+  var large = localStorage.getItem(ZOOM_KEY) === 'large';
+  if (large) document.body.classList.add('large');
+  else document.body.classList.remove('large');
+}
+document.getElementById('zoomToggleBtn').addEventListener('click', function() {
+  var large = document.body.classList.toggle('large');
+  localStorage.setItem(ZOOM_KEY, large ? 'large' : 'compact');
+});
+
+applyZoom();
 renderAll();

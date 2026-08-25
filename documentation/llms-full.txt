@@ -1,7 +1,6 @@
-﻿
 # Password Generator — Full Documentation Corpus
 
-> Complete documentation and source code for AI coding assistants. Generated 2026-08-23.
+> Complete documentation and source code for AI coding assistants. Generated 2026-08-25.
 
 ---
 
@@ -10,6 +9,8 @@
 # Password Generator
 
 > Cryptographically secure password, token, and secret generator. Single-file HTML app with zero dependencies, powered by vanilla JavaScript and `crypto.getRandomValues()`.
+
+![Alphanumeric password generator](password-generator-01-alphanumeric.png)
 
 ---
 
@@ -39,24 +40,29 @@
 
 > Alternatively, host it on **GitHub Pages** for an always-available online version.
 
+![Passphrase generator](password-generator-02-passphrase.png)
+
 ---
 
 ## Features
 
-- **18 password & secret types** across 4 categories â€” from simple PIN codes to JWT secrets and UUIDs.
-- **Dark theme UI** â€” same styling as GitHub's design system. Responsive for desktop and mobile.
-- **Cryptographically secure** â€” all values use `crypto.getRandomValues()`, never `Math.random()`.
-- **Copy-to-clipboard** â€” one click to copy any generated value.
-- **Favorites** â€” star frequently used types for quick access.
-- **History** â€” last 5 generations are saved; click to restore settings and regenerate.
-- **Bulk generation** â€” generate up to 100 values at once.
-- **Export** â€” download generated values as `.txt` or `.csv`.
-- **QR code** â€” OTP/TOTP secrets render as QR codes with SVG/PNG/PDF download.
-- **i18n** â€” built-in Danish and English. Import/export custom language files.
-- **Docker/.env-safe mode** â€” avoids characters that break in `.env` files and Docker Compose (`$'"\`!&#*?=:`).
-- **Custom wordlist upload** â€” upload your own dictionary for passphrase generation.
-- **Keyboard shortcut** â€” `Ctrl+Enter` (Windows/Linux) or `Cmd+Enter` (Mac) to generate.
-- **Zero dependencies** â€” everything is vanilla HTML, CSS, and JavaScript in a single HTML file plus supporting scripts.
+- **18 password & secret types** across 4 categories — from simple PIN codes to JWT secrets and UUIDs.
+- **Dark theme UI** — same styling as GitHub's design system. Responsive for desktop and mobile.
+- **Cryptographically secure** — all values use `crypto.getRandomValues()`, never `Math.random()`.
+- **Copy-to-clipboard** — one click to copy any generated value.
+- **Favorites** — star frequently used types for quick access.
+- **History** — last 5 generations are saved; click to restore settings and regenerate.
+- **Bulk generation** — generate up to 100 values at once.
+- **Export** — download generated values as `.txt` or `.csv`.
+- **QR code** — OTP/TOTP secrets render as QR codes with SVG/PNG/PDF download.
+- **i18n** — built-in Danish and English. Import/export custom language files.
+- **Docker/.env-safe mode** — avoids characters that break in `.env` files and Docker Compose (`$'"\`!&#*?=:`).
+- **Custom wordlist upload** — upload your own dictionary for passphrase generation.
+- **Keyboard shortcut** — `Ctrl+Enter` (Windows/Linux) or `Cmd+Enter` (Mac) to generate.
+- **Zoom toggle** — switch between compact and large UI with one click. Preference saved in localStorage.
+- **Zero dependencies** — everything is vanilla HTML, CSS, and JavaScript in a single HTML file plus supporting scripts.
+
+![PIN code generator](password-generator-03-pin-code.png)
 
 ---
 
@@ -66,11 +72,13 @@
 
 | Type | Description | Key Settings |
 |---|---|---|
-| **Alphanumeric** | Random characters (a-z, A-Z, 0-9, special chars) | Length (8â€“128), special chars toggle, Docker/.env-safe |
-| **Passphrase / Diceware** | Random dictionary words for memorable master passwords | Word count (3â€“12), separator, wordlist (Danish/English/Custom) |
-| **PIN Code** | Numeric only | Length (4â€“8) |
-| **Pronounceable** | Phonetic syllables that can be spoken aloud | Syllable count (3â€“8) |
+| **Alphanumeric** | Random characters (a-z, A-Z, 0-9, special chars) | Length (8–128), special chars toggle, Docker/.env-safe |
+| **Passphrase / Diceware** | Random dictionary words for memorable master passwords | Word count (3–12), separator, wordlist (Danish/English/Custom) |
+| **PIN Code** | Numeric only | Length (4–8) |
+| **Pronounceable** | Phonetic syllables that can be spoken aloud | Syllable count (3–8) |
 | **OTP / TOTP** | Base32 secret key for authenticator apps | 16/32 characters, QR code output |
+
+![OTP / TOTP QR code](password-generator-04-otp-totp.png)
 
 ### Cryptographic Noise & Hashes
 
@@ -79,7 +87,7 @@
 | **Salt** | Random value added before hashing | Length (16/32/64 bytes), format (Hex/Base64) |
 | **Pepper** | Secret system value added during hashing | Length (32/64/128 bytes), format (Hex/Base64) |
 | **Nonce / IV** | One-time value for encryption | Length (12/16 bytes), format (Hex/Base64) |
-| **Encryption Key** | 256-bit AES key for symmetric encryption | Format (Hex/Base64) |
+| **Encryption Key** | 256-bit AES key for symmetric encryption. AES-256-CBC and AES-256-GCM output key+IV/nonce pairs. | Format (Hex/Base64/AES-256-CBC/AES-256-GCM) |
 
 ### API & System Secrets
 
@@ -97,7 +105,7 @@
 |---|---|---|
 | **UUID v4** | RFC 4122 universally unique identifier | Format (standard/without dashes/uppercase) |
 | **Magic Link / Reset Token** | Time-limited token for passwordless login | Length (32/64/128), format (Hex/Base64URL) |
-| **Recovery / Backup Codes** | Printable backup codes for account recovery | Count (5â€“20), format (with/without dashes) |
+| **Recovery / Backup Codes** | Printable backup codes for account recovery | Count (5–20), format (with/without dashes) |
 
 ---
 
@@ -105,24 +113,26 @@
 
 ```
 password-generator/
-â”œâ”€â”€ index.html          # HTML structure + embedded CSS (dark theme)
-â”œâ”€â”€ app.js              # State management, UI rendering, event handling
-â”œâ”€â”€ types.js            # 18 password type definitions, categories, generators
-â”œâ”€â”€ wordlists.js        # ~1000 Danish words + ~1000 English words (Diceware)
-â”œâ”€â”€ i18n.js             # Internationalization (da/en) + custom language loader
-â””â”€â”€ qr.js               # Standalone QR code generator (SVG/PNG/PDF output)
+├── index.html          # HTML structure + embedded CSS (dark theme)
+├── app.js              # State management, UI rendering, event handling
+├── types.js            # 18 password type definitions, categories, generators
+├── wordlists.js        # ~1000 Danish words + ~1000 English words (Diceware)
+├── i18n.js             # Internationalization (da/en) + custom language loader
+└── qr.js               # Standalone QR code generator (SVG/PNG/PDF output)
 ```
 
+![Bulk generation](password-generator-05-bulk.png)
+
 **Data flow:**
-1. User selects a type in the sidebar â†’ `app.js` reads type definition from `types.js`
+1. User selects a type in the sidebar → `app.js` reads type definition from `types.js`
 2. Settings panel renders dynamically from the type's settings definition
-3. User configures settings and clicks "Generate" â†’ type's `generate()` function runs
+3. User configures settings and clicks "Generate" → type's `generate()` function runs
 4. `crypto.getRandomValues()` fills typed arrays with cryptographically secure random bytes
 5. Results are displayed with copy buttons, download options, and optional QR code
 6. History is stored in `localStorage` (last 5 entries) and rendered at the top of the page
 
 **Design principles:**
-- Pure functions for generation â€” deterministic output given the same RNG state
+- Pure functions for generation — deterministic output given the same RNG state
 - No global state mutations outside of `state` object in `app.js`
 - All DOM manipulation happens in render functions; no inline event handlers in HTML
 - CSS uses CSS custom properties (variables) for theming; single source of truth for colors
@@ -134,7 +144,7 @@ password-generator/
 ### The page is blank or doesn't load
 - Make sure you're opening `index.html` and all `.js` files are in the same directory.
 - Open browser DevTools (F12) and check the Console tab for errors.
-- The app requires a modern browser (Chrome, Firefox, Edge, Safari â€” released 2020 or later).
+- The app requires a modern browser (Chrome, Firefox, Edge, Safari — released 2020 or later).
 
 ### Copy button doesn't work
 - Clipboard API requires a secure context (HTTPS or `localhost`). When opened via `file://`, the app falls back to `document.execCommand('copy')`.
@@ -159,8 +169,8 @@ password-generator/
 
 This repository includes structured documentation optimized for AI coding assistants (Cursor, Copilot, Claude Code, etc.):
 
-- **[llms.txt](llms.txt)** â€” concise reference with file structure, architecture, and key conventions. Point AI assistants to this file to get context quickly.
-- **[llms-full.txt](llms-full.txt)** â€” complete documentation corpus including all source code. Load this for deep understanding of the entire codebase.
+- **[llms.txt](llms.txt)** — concise reference with file structure, architecture, and key conventions. Point AI assistants to this file to get context quickly.
+- **[llms-full.txt](llms-full.txt)** — complete documentation corpus including all source code. Load this for deep understanding of the entire codebase.
 
 ---
 
@@ -174,7 +184,7 @@ All contributors are expected to adhere to our [Code of Conduct](CODE_OF_CONDUCT
 
 ## License
 
-This project is licensed under the MIT License â€” see [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
@@ -192,33 +202,43 @@ A zero-dependency, single-page password, token, and secret generator. Vanilla HT
 
 ```
 password-generator/
-â”œâ”€â”€ index.html          # Entry point. HTML structure + embedded CSS (176 lines)
-â”œâ”€â”€ app.js              # State management, UI rendering, event handling (350 lines)
-â”œâ”€â”€ types.js            # Type definitions, categories, generation functions (149 lines)
-â”œâ”€â”€ wordlists.js        # WORDLIST_DA (~1000 words) + WORDLIST_EN (~1000 words)
-â”œâ”€â”€ i18n.js             # I18N object (da/en), t() helper, custom language loader (131 lines)
-â””â”€â”€ qr.js               # Standalone QR code generator, SVG/PNG/PDF output (133 lines)
+├── index.html          # Entry point. HTML structure + embedded CSS (254 lines)
+├── app.js              # State management, UI rendering, event handling (331 lines)
+├── types.js            # Type definitions, categories, generation functions (164 lines)
+├── wordlists.js        # WORDLIST_DA (~1000 words) + WORDLIST_EN (~1000 words)
+├── i18n.js             # I18N object (da/en), t() helper, custom language loader (129 lines)
+└── qr.js               # Standalone QR code generator, SVG/PNG/PDF output (133 lines)
+
+documentation/
+├── README.md           # Full project README with embedded screenshots
+├── llms.txt            # This file
+├── llms-full.txt       # Complete documentation corpus with source code
+├── password-generator-01-alphanumeric.png   # Screenshot: alphanumeric
+├── password-generator-02-passphrase.png     # Screenshot: passphrase
+├── password-generator-03-pin-code.png       # Screenshot: PIN code
+├── password-generator-04-otp-totp.png       # Screenshot: OTP/TOTP
+└── password-generator-05-bulk.png           # Screenshot: bulk generation
 ```
 
 ## Load Order
 
-Scripts must load in this order: `i18n.js` â†’ `wordlists.js` â†’ `qr.js` â†’ `types.js` â†’ `app.js`
+Scripts must load in this order: `i18n.js` → `wordlists.js` → `qr.js` → `types.js` → `app.js`
 
 `i18n.js` must load first because `types.js` calls `t()` at module level (not recommended but current behavior). `app.js` calls `renderAll()` at end-of-file which bootstraps the entire UI.
 
 ## Global Namespace
 
-All scripts use global `var` declarations â€” no ES modules, no bundler:
+All scripts use global `var` declarations — no ES modules, no bundler:
 
-- `var I18N` â€” translation dictionary (da, en)
-- `var LANG` â€” current language code
-- `var t(k)` â€” translate function
-- `var setLang(lang)` â€” switch language
-- `var TYPES` â€” password type registry
-- `var CATEGORIES` â€” category array with type references
-- `var WORDLIST_DA`, `var WORDLIST_EN` â€” word lists
-- `var QR` â€” QR code generator namespace
-- `var state` â€” central application state
+- `var I18N` — translation dictionary (da, en)
+- `var LANG` — current language code
+- `var t(k)` — translate function
+- `var setLang(lang)` — switch language
+- `var TYPES` — password type registry
+- `var CATEGORIES` — category array with type references
+- `var WORDLIST_DA`, `var WORDLIST_EN` — word lists
+- `var QR` — QR code generator namespace
+- `var state` — central application state
 
 ## State Object (app.js)
 
@@ -276,11 +296,11 @@ Each category references its types by their TYPES key. Order in `CATEGORIES` det
 ## Render Pipeline
 
 `renderAll()` (app.js line 292) orchestrates all rendering:
-1. `updateLangSelect()` â€” rebuild language dropdown
-2. `renderTypeList()` â€” rebuild sidebar (favorites first, then categories)
-3. `renderSettings()` â€” rebuild settings grid for selected type
-4. `renderResults()` â€” rebuild results list with copy/QR/download buttons
-5. `renderHistory()` â€” rebuild history list
+1. `updateLangSelect()` — rebuild language dropdown
+2. `renderTypeList()` — rebuild sidebar (favorites first, then categories)
+3. `renderSettings()` — rebuild settings grid for selected type
+4. `renderResults()` — rebuild results list with copy/QR/download buttons
+5. `renderHistory()` — rebuild history list
 6. Update title text and empty state
 
 ## Key Conventions
@@ -293,6 +313,8 @@ Each category references its types by their TYPES key. Order in `CATEGORIES` det
 - History items encode settings as `encodeURIComponent(JSON.stringify(...))` in a `data-settings` attribute.
 - The hover popup uses `data-popup` attribute with pre-translated text (escaped for HTML).
 - UUID v4 follows RFC 4122: version 4 (bits 48-51 = `0100`) and variant 1 (bits 64-65 = `10`).
+- Zoom toggle uses `body.large` CSS class with overrides for all component sizes. Preference stored in `localStorage` key `pwgen_zoom`.
+- Encryption Key type supports AES-256-CBC (outputs KEY + IV) and AES-256-GCM (outputs KEY + NONCE) as separate result lines.
 
 ## Extension Points
 
@@ -303,7 +325,7 @@ To add a new password type:
 
 To add a new language:
 1. Add a new object under `I18N` (e.g., `I18N.fr = { ... }`).
-2. Translate all keys â€” use `I18N.en` as the reference for required keys.
+2. Translate all keys — use `I18N.en` as the reference for required keys.
 3. Add the language to the `<select>` in `index.html` or use the Import Language feature.
 
 ---
@@ -312,7 +334,7 @@ To add a new language:
 
 ### index.html
 
-``html
+```html
 <!DOCTYPE html>
 <html lang="da">
 <head>
@@ -327,101 +349,178 @@ To add a new language:
   --text-muted: #6e7681; --accent: #58a6ff; --accent-hover: #79c0ff;
   --success: #3fb950; --warning: #d2991d; --danger: #f85149; --radius: 6px; --transition: 150ms ease;
 }
-html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); font-size: 14px; line-height: 1.5; overflow: hidden; }
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg-primary); color: var(--text-primary); font-size: 12px; line-height: 1.4; overflow: hidden; }
 .app { display: flex; height: 100vh; }
-.sidebar { width: 300px; min-width: 300px; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
-.sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.sidebar-nav { flex: 1; overflow-y: auto; padding: 8px 0; }
-.category { margin-bottom: 4px; }
-.category-header { padding: 8px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); cursor: default; }
-.type-item { position: relative; display: flex; align-items: center; padding: 8px 16px 8px 24px; cursor: pointer; color: var(--text-secondary); transition: background var(--transition), color var(--transition); border-left: 3px solid transparent; font-size: 13px; }
+.sidebar { width: 240px; min-width: 240px; background: var(--bg-secondary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-header { padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 2px 0; }
+.category { margin-bottom: 2px; }
+.category-header { padding: 4px 12px; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); cursor: default; }
+.type-item { position: relative; display: flex; align-items: center; padding: 4px 12px 4px 16px; cursor: pointer; color: var(--text-secondary); transition: background var(--transition), color var(--transition); border-left: 2px solid transparent; font-size: 11px; }
 .type-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
 .type-item.active { background: rgba(88, 166, 255, 0.08); color: var(--accent); border-left-color: var(--accent); }
-.type-item .type-icon { margin-right: 8px; font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+.type-item .type-icon { margin-right: 4px; font-size: 11px; width: 14px; text-align: center; flex-shrink: 0; }
 .type-item .type-name { flex: 1; }
-.fav-star { margin-left: 4px; cursor: pointer; font-size: 14px; color: var(--text-muted); transition: color var(--transition); flex-shrink: 0; padding: 2px 4px; user-select: none; }
+.fav-star { margin-left: 1px; cursor: pointer; font-size: 10px; color: var(--text-muted); transition: color var(--transition); flex-shrink: 0; padding: 1px 2px; user-select: none; }
 .fav-star:hover { color: var(--warning); }
 .fav-star.active { color: var(--warning); }
-.fav-section { border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 4px; }
+.fav-section { border-bottom: 1px solid var(--border); padding-bottom: 2px; margin-bottom: 2px; }
 .fav-section .category-header { color: var(--warning); }
-.hover-popup { display: none; position: fixed; z-index: 1000; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; max-width: 280px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); pointer-events: none; }
+.hover-popup { display: none; position: fixed; z-index: 1000; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 8px; max-width: 240px; font-size: 10px; color: var(--text-secondary); line-height: 1.4; box-shadow: 0 8px 24px rgba(0,0,0,0.4); pointer-events: none; }
 .hover-popup.visible { display: block; }
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.main-header { padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; }
-.main-header h2 { font-size: 18px; font-weight: 600; white-space: nowrap; }
-.header-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.tool-btn { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: 4px; }
+.main-header { padding: 6px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 6px; }
+.main-header h2 { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.header-tools { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.tool-btn { padding: 3px 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 10px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: 3px; }
 .tool-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(88, 166, 255, 0.08); }
-.lang-select { padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-primary); font-size: 12px; font-family: inherit; cursor: pointer; outline: none; }
+.lang-select { padding: 3px 4px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-primary); font-size: 10px; font-family: inherit; cursor: pointer; outline: none; }
 .lang-select:focus { border-color: var(--accent); }
-.main-content { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-.history-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.history-header h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-.history-actions { display: flex; gap: 6px; }
-.clear-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--text-muted); font-size: 11px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+.main-content { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 6px; -webkit-overflow-scrolling: touch; }
+.history-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px; }
+.history-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.history-header h3 { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.history-actions { display: flex; gap: 3px; }
+.clear-btn { padding: 1px 5px; border: 1px solid var(--border); border-radius: var(--radius); background: transparent; color: var(--text-muted); font-size: 9px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
 .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
-.history-list { display: flex; flex-direction: column; gap: 6px; }
-.history-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg-tertiary); border-radius: var(--radius); cursor: pointer; transition: background var(--transition); font-size: 13px; }
+.history-list { display: flex; flex-direction: column; gap: 2px; }
+.history-item { display: flex; align-items: center; justify-content: space-between; padding: 4px 7px; background: var(--bg-tertiary); border-radius: var(--radius); cursor: pointer; transition: background var(--transition); font-size: 10px; }
 .history-item:hover { background: var(--border); }
-.history-item .history-type { color: var(--text-muted); font-size: 11px; margin-right: 12px; flex-shrink: 0; }
-.history-item .history-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.history-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 12px; }
-.settings-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-.settings-section h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-.settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-.setting-group { display: flex; flex-direction: column; gap: 6px; }
-.setting-group label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
-.setting-group select, .setting-group input[type="number"], .setting-group input[type="text"] { padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; transition: border-color var(--transition); }
+.history-item .history-type { color: var(--text-muted); font-size: 8px; margin-right: 5px; flex-shrink: 0; }
+.history-item .history-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+.history-empty { color: var(--text-muted); font-size: 9px; text-align: center; padding: 4px; }
+.settings-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px; }
+.settings-section h3 { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.setting-group { display: flex; flex-direction: column; gap: 3px; }
+.setting-group label { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
+.setting-group select, .setting-group input[type="number"], .setting-group input[type="text"] { padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 11px; font-family: inherit; outline: none; transition: border-color var(--transition); }
 .setting-group select:focus, .setting-group input:focus { border-color: var(--accent); }
 .setting-group input[type="number"] { width: 100%; }
-.toggle-group { display: flex; align-items: center; gap: 8px; }
-.toggle-group input[type="checkbox"] { appearance: none; width: 36px; height: 20px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 10px; position: relative; cursor: pointer; transition: all var(--transition); flex-shrink: 0; }
-.toggle-group input[type="checkbox"]::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: var(--text-muted); border-radius: 50%; transition: all var(--transition); }
-.toggle-group input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
-.toggle-group input[type="checkbox"]:checked::after { left: 18px; background: #fff; }
-.toggle-group label { font-size: 13px; color: var(--text-primary); cursor: pointer; }
-.generate-section { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.generate-btn { padding: 10px 24px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background var(--transition); font-family: inherit; }
+.toggle-group { display: flex; align-items: center; gap: 4px; }
+.toggle-group input[type="checkbox"] { appearance: none; width: 28px; height: 16px; background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 8px; position: relative; cursor: pointer; transition: all var(--transition); flex-shrink: 0; }
+.toggle-group input[type="checkbox"]::after { content: ''; position: absolute; top: 1px; left: 1px; width: 12px; height: 12px; background: var(--text-muted); border-radius: 50%; transition: all var(--transition); }
+.toggle-group input[type="checkbox"]:checked::after { left: 13px; background: #fff; }
+.toggle-group label { font-size: 11px; color: var(--text-primary); cursor: pointer; }
+.generate-section { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.generate-btn { padding: 6px 14px; border: none; border-radius: var(--radius); background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: background var(--transition); font-family: inherit; }
 .generate-btn:hover { background: var(--accent-hover); }
 .generate-btn:active { transform: scale(0.98); }
-.bulk-group { display: flex; align-items: center; gap: 6px; }
-.bulk-group label { font-size: 12px; color: var(--text-secondary); }
-.bulk-group input[type="number"] { width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 13px; font-family: inherit; outline: none; }
+.bulk-group { display: flex; align-items: center; gap: 4px; }
+.bulk-group label { font-size: 10px; color: var(--text-secondary); }
+.bulk-group input[type="number"] { width: 40px; padding: 3px 4px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); font-size: 11px; font-family: inherit; outline: none; }
 .bulk-group input:focus { border-color: var(--accent); }
-.result-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-.result-header h3 { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-.result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-.result-list { display: flex; flex-direction: column; gap: 8px; }
-.result-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); }
-.result-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 14px; word-break: break-all; color: var(--success); }
-.copy-btn { padding: 6px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; flex-shrink: 0; }
+.result-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px; }
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 4px; }
+.result-header h3 { font-size: 10px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.result-actions { display: flex; gap: 3px; flex-wrap: wrap; }
+.result-list { display: flex; flex-direction: column; gap: 3px; max-height: 160px; overflow-y: auto; padding-right: 3px; }
+.result-item { display: flex; align-items: center; gap: 4px; padding: 5px 7px; background: var(--bg-primary); border: 1px solid var(--border); border-radius: var(--radius); }
+.result-value { flex: 1; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 11px; word-break: break-all; color: var(--success); }
+.copy-btn { padding: 2px 7px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 10px; cursor: pointer; transition: all var(--transition); white-space: nowrap; font-family: inherit; flex-shrink: 0; }
 .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
 .copy-btn.copied { border-color: var(--success); color: var(--success); background: rgba(63, 185, 80, 0.1); }
-.qr-container { margin-top: 12px; text-align: center; }
-.qr-container svg { background: #fff; border-radius: var(--radius); padding: 8px; max-width: 100%; height: auto; }
-.qr-dl-btns { display: flex; gap: 6px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
-.qr-dl-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 11px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+.qr-container { margin-top: 4px; text-align: center; }
+.qr-container svg { background: #fff; border-radius: var(--radius); padding: 2px; max-width: 130px; height: auto; }
+.qr-dl-btns { display: flex; gap: 2px; justify-content: center; margin-top: 3px; flex-wrap: wrap; }
+.qr-dl-btn { padding: 2px 5px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-tertiary); color: var(--text-secondary); font-size: 9px; cursor: pointer; transition: all var(--transition); font-family: inherit; }
 .qr-dl-btn:hover { border-color: var(--accent); color: var(--accent); }
-.wordlist-upload { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.wordlist-status { font-size: 11px; color: var(--success); }
-.empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
-.empty-state p { font-size: 14px; margin-bottom: 4px; }
-.empty-state .empty-hint { font-size: 12px; color: var(--text-muted); }
+.wordlist-upload { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+.wordlist-status { font-size: 9px; color: var(--success); }
+.empty-state { text-align: center; padding: 12px 16px; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 24px; margin-bottom: 4px; opacity: 0.3; }
+.empty-state p { font-size: 11px; margin-bottom: 2px; }
+.empty-state .empty-hint { font-size: 9px; color: var(--text-muted); }
 @media (max-width: 768px) {
   .app { flex-direction: column; }
-  .sidebar { width: 100%; min-width: 100%; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
-  .main-content { padding: 16px; }
+  .sidebar { width: 100%; min-width: 100%; max-height: 30vh; border-right: none; border-bottom: 1px solid var(--border); }
+  .main-content { padding: 6px; gap: 4px; }
   .settings-grid { grid-template-columns: 1fr; }
-  .header-tools { gap: 4px; }
-  .tool-btn { font-size: 10px; padding: 4px 6px; }
+  .settings-section { padding: 8px; }
+  .result-section { padding: 8px; }
+  .history-section { padding: 8px; }
+  .header-tools { gap: 3px; }
+  .tool-btn { font-size: 9px; padding: 3px 5px; }
+  .main-header { padding: 6px 10px; }
+  .main-header h2 { font-size: 13px; }
+  .result-list { max-height: 120px; }
+  .qr-container svg { max-width: 100px; }
+  .generate-section { flex-direction: column; align-items: stretch; }
+  .generate-btn { width: 100%; }
+  .bulk-group { justify-content: center; }
 }
-::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+body.large { font-size: 14px; line-height: 1.5; }
+body.large .sidebar { width: 300px; min-width: 300px; }
+body.large .sidebar-header { padding: 16px; font-size: 16px; }
+body.large .sidebar-nav { padding: 8px 0; }
+body.large .category-header { padding: 8px 16px; font-size: 11px; }
+body.large .type-item { padding: 8px 16px 8px 24px; font-size: 13px; border-left-width: 3px; }
+body.large .type-item .type-icon { margin-right: 8px; font-size: 14px; width: 20px; }
+body.large .fav-star { margin-left: 4px; font-size: 14px; padding: 2px 4px; }
+body.large .fav-section { padding-bottom: 4px; margin-bottom: 4px; }
+body.large .hover-popup { padding: 10px 14px; max-width: 280px; font-size: 12px; line-height: 1.5; }
+body.large .main-header { padding: 12px 24px; gap: 12px; }
+body.large .main-header h2 { font-size: 18px; }
+body.large .header-tools { gap: 8px; }
+body.large .tool-btn { padding: 6px 10px; font-size: 11px; gap: 4px; }
+body.large .lang-select { padding: 6px 8px; font-size: 12px; }
+body.large .main-content { padding: 24px; gap: 20px; }
+body.large .history-section { padding: 16px; }
+body.large .history-header { margin-bottom: 12px; }
+body.large .history-header h3 { font-size: 13px; }
+body.large .history-actions { gap: 6px; }
+body.large .clear-btn { padding: 4px 10px; font-size: 11px; }
+body.large .history-list { gap: 6px; }
+body.large .history-item { padding: 8px 12px; font-size: 13px; }
+body.large .history-item .history-type { font-size: 11px; margin-right: 12px; }
+body.large .history-item .history-value { font-size: inherit; }
+body.large .history-empty { font-size: 12px; padding: 12px; }
+body.large .settings-section { padding: 20px; }
+body.large .settings-section h3 { font-size: 13px; margin-bottom: 16px; }
+body.large .settings-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+body.large .setting-group { gap: 6px; }
+body.large .setting-group label { font-size: 12px; }
+body.large .setting-group select, body.large .setting-group input[type="number"], body.large .setting-group input[type="text"] { padding: 8px 10px; font-size: 13px; }
+body.large .toggle-group { gap: 8px; }
+body.large .toggle-group input[type="checkbox"] { width: 36px; height: 20px; border-radius: 10px; }
+body.large .toggle-group input[type="checkbox"]::after { top: 2px; left: 2px; width: 14px; height: 14px; }
+body.large .toggle-group input[type="checkbox"]:checked::after { left: 18px; }
+body.large .toggle-group label { font-size: 13px; }
+body.large .generate-section { gap: 12px; }
+body.large .generate-btn { padding: 10px 24px; font-size: 14px; }
+body.large .bulk-group { gap: 6px; }
+body.large .bulk-group label { font-size: 12px; }
+body.large .bulk-group input[type="number"] { width: 60px; padding: 6px 8px; font-size: 13px; }
+body.large .result-section { padding: 16px; }
+body.large .result-header { margin-bottom: 12px; gap: 8px; }
+body.large .result-header h3 { font-size: 13px; }
+body.large .result-actions { gap: 6px; }
+body.large .result-list { gap: 8px; max-height: 200px; }
+body.large .result-item { gap: 10px; padding: 10px 14px; }
+body.large .result-value { font-size: 14px; }
+body.large .copy-btn { padding: 6px 14px; font-size: 12px; }
+body.large .qr-container { margin-top: 12px; }
+body.large .qr-container svg { padding: 8px; max-width: 100%; }
+body.large .qr-dl-btns { gap: 6px; margin-top: 8px; }
+body.large .qr-dl-btn { padding: 4px 10px; font-size: 11px; }
+body.large .wordlist-upload { gap: 8px; margin-top: 4px; }
+body.large .wordlist-status { font-size: 11px; }
+body.large .empty-state { padding: 40px 20px; }
+body.large .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+body.large .empty-state p { font-size: 14px; }
+body.large .empty-state .empty-hint { font-size: 12px; }
+body.large ::-webkit-scrollbar { width: 8px; }
+body.large ::-webkit-scrollbar-thumb { border-radius: 4px; }
+@media (max-width: 768px) {
+  body.large .sidebar { max-height: 40vh; }
+  body.large .main-content { padding: 16px; }
+  body.large .header-tools { gap: 4px; }
+  body.large .tool-btn { font-size: 10px; padding: 4px 6px; }
+}
 </style>
 </head>
 <body>
@@ -432,11 +531,12 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   </aside>
   <main class="main">
     <div class="main-header">
-      <h2 id="mainTitle">VÃ¦lg en type</h2>
+      <h2 id="mainTitle">Vælg en type</h2>
       <div class="header-tools">
+        <button class="tool-btn" id="zoomToggleBtn" title="Skift størrelse">&#x1F50D;</button>
         <select class="lang-select" id="langSelect"><option value="da">Dansk</option><option value="en">English</option></select>
-        <button class="tool-btn" id="importLangBtn" title="ImportÃ©r oversat sprogfil">&#x1F4E5; <span class="ilbl">ImportÃ©r sprog</span></button>
-        <button class="tool-btn" id="exportTemplateBtn" title="EksportÃ©r skabelon til oversÃ¦ttelse">&#x1F4E4; <span class="elbl">EksportÃ©r skabelon</span></button>
+        <button class="tool-btn" id="importLangBtn" title="Importér oversat sprogfil">&#x1F4E5; <span class="ilbl">Importér sprog</span></button>
+        <button class="tool-btn" id="exportTemplateBtn" title="Eksportér skabelon til oversættelse">&#x1F4E4; <span class="elbl">Eksportér skabelon</span></button>
         <input type="file" id="langFileInput" accept=".json" style="display:none;">
       </div>
     </div>
@@ -454,8 +554,8 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       <section class="settings-section" id="settingsSection" style="display:none;">
         <h3 id="settingsTitle">&#x2699;&#xFE0F; Indstillinger</h3>
         <div class="settings-grid" id="settingsGrid"></div>
-        <div style="margin-top:16px;" class="generate-section">
-          <button class="generate-btn" id="generateBtn">GenerÃ©r</button>
+        <div style="margin-top:8px;" class="generate-section">
+          <button class="generate-btn" id="generateBtn">Generér</button>
           <div class="bulk-group">
             <label id="bulkLabel" for="bulkCount">Antal:</label>
             <input type="number" id="bulkCount" min="1" max="100" value="1">
@@ -464,7 +564,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       </section>
       <section class="result-section" id="resultSection" style="display:none;">
         <div class="result-header">
-          <h3 id="resultsTitle">&#x2728; Genererede vÃ¦rdier</h3>
+          <h3 id="resultsTitle">&#x2728; Genererede værdier</h3>
           <div class="result-actions">
             <button class="tool-btn" id="downloadTxtBtn">&#x1F4C4; .txt</button>
             <button class="tool-btn" id="downloadCsvBtn">&#x1F4CA; .csv</button>
@@ -475,7 +575,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
       </section>
       <div class="empty-state" id="emptyState">
         <div class="empty-icon">&#x1F511;</div>
-        <p id="emptyText">VÃ¦lg en password-type i menuen til venstre</p>
+        <p id="emptyText">Vælg en password-type i menuen til venstre</p>
         <p class="empty-hint" id="emptyHint">Alle passwords genereres kryptografisk sikkert med crypto.getRandomValues()</p>
       </div>
     </div>
@@ -489,11 +589,11 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 <script src="app.js"></script>
 </body>
 </html>
-``
+```
 
 ### app.js
 
-``javascript
+```javascript
 var state = {
   selectedType: null,
   settings: {},
@@ -634,9 +734,9 @@ function renderTypeList() {
       popup.classList.add('visible');
     });
     item.addEventListener('mousemove', function(e) {
-      var x = e.clientX + 12, y = e.clientY + 12;
-      if (x + 280 > window.innerWidth) x = e.clientX - 292;
-      if (y + 80 > window.innerHeight) y = e.clientY - 90;
+var x = e.clientX + 10, y = e.clientY + 10;
+if (x + 240 > window.innerWidth) x = e.clientX - 250;
+if (y + 60 > window.innerHeight) y = e.clientY - 70;
       popup.style.left = x + 'px'; popup.style.top = y + 'px';
     });
     item.addEventListener('mouseleave', function() { popup.classList.remove('visible'); });
@@ -744,9 +844,9 @@ function renderResults() {
     var type = TYPES[state.selectedType];
     var qrData = type.getQRData(state.results[0]);
     var qr = QR.generate(qrData);
-    var svg = QR.toSVG(qr.matrix, qr.size, 3, 2);
+    var svg = QR.toSVG(qr.matrix, qr.size, 2, 1);
     qrContainer.style.display = 'block';
-    qrContainer.innerHTML = '<h4 style="margin-bottom:8px;color:var(--text-secondary);font-size:12px;">' + t('qrCode') + '</h4><div>' + svg + '</div><div class="qr-dl-btns"><button class="qr-dl-btn" id="qrSvgBtn">' + t('downloadSvg') + '</button><button class="qr-dl-btn" id="qrPngBtn">' + t('downloadPng') + '</button><button class="qr-dl-btn" id="qrPdfBtn">' + t('downloadPdf') + '</button></div>';
+    qrContainer.innerHTML = '<h4 style="margin-bottom:4px;color:var(--text-secondary);font-size:10px;">' + t('qrCode') + '</h4><div>' + svg + '</div><div class="qr-dl-btns"><button class="qr-dl-btn" id="qrSvgBtn">' + t('downloadSvg') + '</button><button class="qr-dl-btn" id="qrPngBtn">' + t('downloadPng') + '</button><button class="qr-dl-btn" id="qrPdfBtn">' + t('downloadPdf') + '</button></div>';
     document.getElementById('qrSvgBtn').addEventListener('click', function() { QR.downloadSVG(svg, 'otp-qr.svg'); });
     document.getElementById('qrPngBtn').addEventListener('click', function() { QR.downloadPNG(svg, 'otp-qr.png'); });
     document.getElementById('qrPdfBtn').addEventListener('click', function() { QR.downloadPDF(svg, 'otp-qr.pdf'); });
@@ -843,12 +943,24 @@ document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); generate(); }
 });
 
+var ZOOM_KEY = 'pwgen_zoom';
+function applyZoom() {
+  var large = localStorage.getItem(ZOOM_KEY) === 'large';
+  if (large) document.body.classList.add('large');
+  else document.body.classList.remove('large');
+}
+document.getElementById('zoomToggleBtn').addEventListener('click', function() {
+  var large = document.body.classList.toggle('large');
+  localStorage.setItem(ZOOM_KEY, large ? 'large' : 'compact');
+});
+
+applyZoom();
 renderAll();
-``
+```
 
 ### types.js
 
-``javascript
+```javascript
 var TYPES = {
   alfanumerisk: {
     id: 'alfanumerisk', nameKey: 'typeAlfanumerisk', icon: '\uD83D\uDD24', categoryKey: 'catUserPasswords', popupKey: 'popupAlfanumerisk',
@@ -928,8 +1040,24 @@ var TYPES = {
   },
   krypteringsnogle: {
     id: 'krypteringsnogle', nameKey: 'typeKrypteringsnogle', icon: '\uD83D\uDD11', categoryKey: 'catCryptoNoise', popupKey: 'popupKrypteringsnogle',
-    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64'], default: 'optHex' }],
-    generate: function(s) { var arr = new Uint8Array(32); crypto.getRandomValues(arr); if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, arr))]; var hex = ''; for (var i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0'); return [hex]; }
+    settings: [{ key: 'format', labelKey: 'labelFormat', type: 'select', options: ['optHex', 'optBase64', 'optAes256Cbc', 'optAes256Gcm'], default: 'optHex' }],
+    generate: function(s) {
+      var key = new Uint8Array(32); crypto.getRandomValues(key);
+      if (s.format === 'optBase64') return [btoa(String.fromCharCode.apply(null, key))];
+      if (s.format === 'optAes256Cbc') {
+        var iv = new Uint8Array(16); crypto.getRandomValues(iv);
+        var keyHex = ''; for (var i = 0; i < key.length; i++) keyHex += key[i].toString(16).padStart(2, '0');
+        var ivHex = ''; for (var i = 0; i < iv.length; i++) ivHex += iv[i].toString(16).padStart(2, '0');
+        return ['KEY=' + keyHex, 'IV=' + ivHex];
+      }
+      if (s.format === 'optAes256Gcm') {
+        var nonce = new Uint8Array(12); crypto.getRandomValues(nonce);
+        var keyHex = ''; for (var i = 0; i < key.length; i++) keyHex += key[i].toString(16).padStart(2, '0');
+        var nonceHex = ''; for (var i = 0; i < nonce.length; i++) nonceHex += nonce[i].toString(16).padStart(2, '0');
+        return ['KEY=' + keyHex, 'NONCE=' + nonceHex];
+      }
+      var hex = ''; for (var i = 0; i < key.length; i++) hex += key[i].toString(16).padStart(2, '0'); return [hex];
+    }
   },
   apikey: {
     id: 'apikey', nameKey: 'typeApikey', icon: '\uD83D\uDD17', categoryKey: 'catApiSecrets', popupKey: 'popupApikey',
@@ -998,55 +1126,56 @@ var CATEGORIES = [
   { nameKey: 'catApiSecrets', types: ['apikey', 'bearertoken', 'jwtsecret', 'oauthsecret', 'webhooksecret'] },
   { nameKey: 'catIdentifiers', types: ['uuidv4', 'magiclink', 'recoverycode'] }
 ];
-``
+```
 
 ### i18n.js
 
-``javascript
+```javascript
 var I18N = {
   da: {
-    appTitle: 'Password Generator', selectType: 'VÃ¦lg en type', history: 'Seneste', clearHistory: 'Ryd',
+    appTitle: 'Password Generator', selectType: 'Vælg en type', history: 'Seneste', clearHistory: 'Ryd',
     clearClipboard: 'Ryd udklipsholder', noHistory: 'Ingen historik endnu', settings: 'Indstillinger',
-    generate: 'GenerÃ©r', results: 'Genererede vÃ¦rdier', copy: 'KopiÃ©r', copied: 'Kopieret!',
-    emptyText: 'VÃ¦lg en password-type i menuen til venstre',
+    generate: 'Generér', results: 'Genererede værdier', copy: 'Kopiér', copied: 'Kopieret!',
+    emptyText: 'Vælg en password-type i menuen til venstre',
     emptyHint: 'Alle passwords genereres kryptografisk sikkert med crypto.getRandomValues()',
-    favorites: 'Favoritter', language: 'Sprog', importLang: 'ImportÃ©r sprog', exportTemplate: 'EksportÃ©r skabelon',
+    favorites: 'Favoritter', language: 'Sprog', importLang: 'Importér sprog', exportTemplate: 'Eksportér skabelon',
     bulkLabel: 'Antal:', downloadTxt: '.txt', downloadCsv: '.csv', downloadSvg: 'SVG', downloadPng: 'PNG', downloadPdf: 'PDF',
     uploadWordlist: 'Upload ordliste (.txt)', customWordlist: 'Brugerdefineret', qrCode: 'QR kode',
-    catUserPasswords: 'Brugerrettede kodeord', catCryptoNoise: 'Kryptografisk stÃ¸j & hashes',
+    catUserPasswords: 'Brugerrettede kodeord', catCryptoNoise: 'Kryptografisk støj & hashes',
     catApiSecrets: 'API- & systemhemmeligheder', catIdentifiers: 'Identifikatorer & tokens',
     typeAlfanumerisk: 'Alfanumerisk', typePassphrase: 'Passphrase / Diceware', typePinkode: 'PIN-kode',
     typeUdtalevenligt: 'Udtalevenligt', typeOtp: 'OTP / TOTP', typeSalt: 'Salt', typePepper: 'Pepper',
-    typeNonce: 'Nonce / IV', typeKrypteringsnogle: 'KrypteringsnÃ¸gle', typeApikey: 'API Key/Secret',
+    typeNonce: 'Nonce / IV', typeKrypteringsnogle: 'Krypteringsnøgle', typeApikey: 'API Key/Secret',
     typeBearertoken: 'Bearer/Session Token', typeJwtsecret: 'JWT HMAC Secret', typeOauthsecret: 'OAuth Client Secret',
     typeWebhooksecret: 'Webhook Secret', typeUuidv4: 'UUID v4', typeMagiclink: 'Magic Link / Reset Token',
     typeRecoverycode: 'Recovery / Backup koder',
-    popupAlfanumerisk: 'TilfÃ¦ldige tegn (a-z, A-Z, 0-9). Brug til generelle adgangskoder og service-logins.',
-    popupPassphrase: 'Sammensatte ord. Lettere at huske end tilfÃ¦ldige tegn. God til hovedadgangskoder.',
-    popupPinkode: 'Kun tal. Bruges til hurtig adgang, f.eks. skÃ¦rmlÃ¥s eller betalingskort.',
-    popupUdtalevenligt: 'Fonetiske stavelser der kan udtales. God nÃ¥r passwords skal kommunikeres mundtligt.',
-    popupOtp: 'Base32 nÃ¸gle til engangskoder (Google Authenticator, Authy). 16-32 tegn.',
-    popupSalt: 'Kryptografisk tilfÃ¦ldig vÃ¦rdi tilfÃ¸jet fÃ¸r hashing for at forhindre rainbow table-angreb.',
-    popupPepper: 'Hemmelig systemvÃ¦rdi tilfÃ¸jet under hashing. Adskilt fra databasen.',
-    popupNonce: 'EngangsvÃ¦rdi brugt i kryptering. MÃ¥ aldrig genbruges med samme nÃ¸gle.',
-    popupKrypteringsnogle: '256-bit AES nÃ¸gle til symmetrisk kryptering. Holdes absolut hemmelig.',
-    popupApikey: 'NÃ¸gle til API-adgang. Holdes hemmelig. Sendes typisk i HTTP headers.',
-    popupBearertoken: 'Session-token til autentificering. URL-sikker. Har typisk begrÃ¦nset levetid.',
+    popupAlfanumerisk: 'Tilfældige tegn (a-z, A-Z, 0-9). Brug til generelle adgangskoder og service-logins.',
+    popupPassphrase: 'Sammensatte ord. Lettere at huske end tilfældige tegn. God til hovedadgangskoder.',
+    popupPinkode: 'Kun tal. Bruges til hurtig adgang, f.eks. skærmlås eller betalingskort.',
+    popupUdtalevenligt: 'Fonetiske stavelser der kan udtales. God når passwords skal kommunikeres mundtligt.',
+    popupOtp: 'Base32 nøgle til engangskoder (Google Authenticator, Authy). 16-32 tegn.',
+    popupSalt: 'Kryptografisk tilfældig værdi tilføjet før hashing for at forhindre rainbow table-angreb.',
+    popupPepper: 'Hemmelig systemværdi tilføjet under hashing. Adskilt fra databasen.',
+    popupNonce: 'Engangsværdi brugt i kryptering. Må aldrig genbruges med samme nøgle.',
+    popupKrypteringsnogle: '256-bit AES nøgle til symmetrisk kryptering. Holdes absolut hemmelig.',
+    popupApikey: 'Nøgle til API-adgang. Holdes hemmelig. Sendes typisk i HTTP headers.',
+    popupBearertoken: 'Session-token til autentificering. URL-sikker. Har typisk begrænset levetid.',
     popupJwtsecret: 'Hemmelighed til signering af JSON Web Tokens. Beskytter mod forfalskning.',
     popupOauthsecret: 'Klienthemmelighed til OAuth 2.0 flows. Aldrig eksponeret i frontend-kode.',
-    popupWebhooksecret: 'HMAC-nÃ¸gle til at verificere at webhook-requests kommer fra den rigtige afsender.',
-    popupUuidv4: 'Universelt unik identifikator. TilfÃ¦ldig. Bruges til database-ID\'er, sporingsnumre.',
-    popupMagiclink: 'Engangstoken sendt via email til adgangskodefri login. UdlÃ¸ber typisk efter 15-60 min.',
+    popupWebhooksecret: 'HMAC-nøgle til at verificere at webhook-requests kommer fra den rigtige afsender.',
+    popupUuidv4: 'Universelt unik identifikator. Tilfældig. Bruges til database-ID\'er, sporingsnumre.',
+    popupMagiclink: 'Engangstoken sendt via email til adgangskodefri login. Udløber typisk efter 15-60 min.',
     popupRecoverycode: 'Backup-kode til kontogendannelse. Printes og opbevares sikkert offline.',
-    labelLength: 'LÃ¦ngde', labelSpecialChars: 'Specialtegn', labelDockerSafe: 'Docker/.env-safe',
+    labelLength: 'Længde', labelSpecialChars: 'Specialtegn', labelDockerSafe: 'Docker/.env-safe',
     labelWordCount: 'Antal ord', labelSeparator: 'Separator', labelWordlist: 'Ordliste',
-    labelSyllables: 'Antal stavelser', labelBytes: 'LÃ¦ngde (bytes)', labelFormat: 'Format',
-    labelPrefix: 'Prefix', labelBits: 'StÃ¸rrelse', labelCount: 'Antal koder',
+    labelSyllables: 'Antal stavelser', labelBytes: 'Længde (bytes)', labelFormat: 'Format',
+    labelPrefix: 'Prefix', labelBits: 'Størrelse', labelCount: 'Antal koder',
     optDanish: 'Dansk', optEnglish: 'Engelsk', optStandard: 'Standard', optNoDashes: 'Uden bindestreger',
     optUppercase: 'Uppercase', optAlphanumeric: 'Alfanumerisk', optHex: 'Hex', optBase64: 'Base64',
     optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
     optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
-    wordlistLoaded: 'IndlÃ¦st: ', wordlistNone: 'Standard', clipboardCleared: 'Udklipsholder ryddet!',
+    optAes256Cbc: 'AES-256-CBC', optAes256Gcm: 'AES-256-GCM',
+    wordlistLoaded: 'Indlæst: ', wordlistNone: 'Standard', clipboardCleared: 'Udklipsholder ryddet!',
     optCustom: 'Brugerdefineret'
   },
   en: {
@@ -1091,6 +1220,7 @@ var I18N = {
     optUppercase: 'Uppercase', optAlphanumeric: 'Alphanumeric', optHex: 'Hex', optBase64: 'Base64',
     optBase64URL: 'Base64URL', opt256bit: '256 bit', opt512bit: '512 bit',
     optDashFormat: 'xxxx-xxxx-xxxx', optNoDashFormat: 'xxxxxxxxxxxx',
+    optAes256Cbc: 'AES-256-CBC', optAes256Gcm: 'AES-256-GCM',
     wordlistLoaded: 'Loaded: ', wordlistNone: 'Default', clipboardCleared: 'Clipboard cleared!',
     optCustom: 'Custom'
   }
@@ -1111,7 +1241,7 @@ function loadCustomLang(jsonStr) {
       if (data[enKeys[i]]) I18N[langCode][enKeys[i]] = data[enKeys[i]];
       else missing.push(enKeys[i]);
     }
-    if (missing.length > 0) { alert('Manglende nÃ¸gler: ' + missing.join(', ')); return false; }
+    if (missing.length > 0) { alert('Manglende nøgler: ' + missing.join(', ')); return false; }
     localStorage.setItem('pwgen_custom_lang_' + langCode, jsonStr);
     return langCode;
   } catch(e) { alert('Ugyldig JSON: ' + e.message); return false; }
@@ -1134,11 +1264,11 @@ function loadAllCustomLangs() {
   }
 }
 loadAllCustomLangs();
-``
+```
 
 ### qr.js
 
-``javascript
+```javascript
 var QR = (function() {
   var gf = { exp: new Array(512), log: new Array(256) };
   for (var i = 0, x = 1; i < 255; i++) { gf.exp[i] = x; gf.log[x] = i; x = (x << 1) ^ (x & 0x80 ? 0x11d : 0); }
@@ -1272,53 +1402,12 @@ var QR = (function() {
   }
   return { generate: generate, toSVG: toSVG, downloadSVG: downloadSVG, downloadPNG: downloadPNG, downloadPDF: downloadPDF };
 })();
-``
-
-### wordlists.js (truncated — full wordlists contain ~1000+ words each)
-
-``javascript
-var WORDLIST_DA = [/* ~1000 Danish words */];
-var WORDLIST_EN = [/* ~1000 English words */];
-// Full wordlists available in the repository at password-generator/wordlists.js
-``
-
----
-
-## Repository Metadata
-
-# GitHub Repository Metadata
-
-> Copy these values directly into the GitHub repository settings.
-
-## Description (About)
-
-```
-Cryptographically secure password, token, and secret generator. Single-file HTML app with zero dependencies, powered by vanilla JavaScript and crypto.getRandomValues().
 ```
 
-## Topic Tags
+### wordlists.js
 
-Add these topics on the repository page (click the gear icon next to "About"):
+```javascript
+var WORDLIST_DA = ["a","ad","af","aften","aftale","al","aldrig","alene","alle","allerede","alt","altid","alvor","anden","angst","ankomme","ansigt","arbejde","arm","art","avis","bad","bage","bange","bank","barn","barsel","bede","bedre","bedst","bedstemor","begynde","begyndelse","behandle","beholde","behov","ben","besked","beslutte","besøg","besøge","betale","betydning","bil","billede","bjerg","blad","blandt","blank","blid","blind","blive","blod","blomst","bluse","bly","blød","blå","bog","bolig","bord","borg","bort","brag","brand","bred","brev","bro","bror","bruge","brud","brun","bryde","bryllup","bryst","brække","brænde","bud","budskab","bue","bugt","bund","busk","by","bygge","bytte","bænk","bære","børn","båd","bål","cafe","center","cirkel","citat","dag","dal","danmark","danne","dans","danse","datter","dele","dem","den","denne","der","deres","derfor","derved","det","dig","din","dine","direkte","disk","dit","dog","doktor","drøm","dreng","drikke","dronning","dråbe","du","due","dum","dukke","dundre","dyr","dyre","død","døgn","dør","dårlig","efter","efterår","egen","egn","eje","eller","elske","elv","en","ende","endelig","endnu","eng","engang","engel","enig","enkelt","ens","ensom","enten","er","evne","fald","falde","familie","fandt","fange","far","fare","farve","fast","feber","fejl","fest","film","finde","finger","fisk","fjende","fjern","fjord","flad","flamme","flaske","flink","flod","flok","flygte","flytte","flyve","fløde","fløjl","folk","for","foran","forbi","fordi","foregå","forestille","forklare","forlade","form","formål","forstå","forsvinde","fortælle","fortsætte","forår","fra","fred","frem","fremmed","frisk","frokost","frost","frugt","frygt","frygte","frø","fugl","fuld","fungere","fyr","fyrre","færdig","føle","følge","før","første","få","gade","gal","gammel","gang","garn","gav","gave","gen","gennem","gerne","gift","gik","give","glad","glas","glemme","glide","glæde","god","godt","grad","gran","gratis","grav","gren","grine","grov","grund","gruppe","grus","gryde","græde","grænse","græs","grøn","grå","gud","gul","guld","gulv","gøre","gå","gård","halv","ham","han","hans","har","have","hav","hegn","hej","hel","held","heller","helt","hemmelig","hen","hende","hendes","hente","her","herre","hest","himmel","hinde","hindre","hjem","hjemsøge","hjerte","hjul","hjælp","hjælpe","holde","hos","hoved","hud","hul","hund","hun","hus","hvad","hvalp","hvede","hver","hverdag","hvid","hvilken","hvis","hvor","hvordan","hvorfor","høj","højt","høre","høst","hånd","hår","i","idag","ide","igen","ild","ind","inden","indre","ingen","ingenting","intet","is","ja","jagt","jeg","jeres","jo","job","jord","jul","juni","jæger","jævn","kaffe","kage","kalde","kamp","kan","kande","kappe","kaste","kat","ked","kende","kendskab","kile","kirke","kiste","klage","klar","klasse","klog","klokke","klæde","knap","kniv","knuse","knæ","koge","kold","komme","kone","konge","korn","kort","kraft","krig","kristen","kro","krop","krone","kræve","kugle","kun","kunne","kunst","kvinde","kvist","kyst","købe","køkken","køre","kær","kærlighed","lad","lade","lagde","lampe","land","landsby","lang","langsom","lave","le","lede","leg","lege","lejlighed","lem","lempe","leve","lig","ligge","ligne","lille","liste","liv","lo","lod","lov","love","lue","luft","lukke","lund","ly","lyd","lykke","lykkelig","lys","lyse","lyst","lytte","lægge","længe","lære","lærer","læse","løbe","løfte","løgn","løs","løve","låne","lås","mad","mage","male","man","mand","mange","mark","med","mellem","mens","menneske","mester","mig","min","minde","mindre","miste","mod","modig","mor","morke","morgen","mose","mulig","mund","munk","mur","myre","mælk","mængde","mærke","møde","møg","mørk","mørke","måde","mål","måne","måske","nat","natur","naturligvis","ned","nede","nem","nogen","noget","nok","nord","nu","ny","nylig","nys","nytte","nær","næste","næsten","nøgen","nøgle","når","og","også","olie","om","omme","ondt","op","oppe","ord","orm","os","over","ovn","pande","papir","par","park","part","pas","passe","pen","penge","person","pibe","pige","pille","pind","plads","plan","plante","pligt","pludselig","pløje","pose","post","prins","prinsesse","prøve","på","pæn","pære","pølse","ramme","rask","rede","regn","rejse","ren","rende","ret","rette","rig","rigtig","rim","ring","rive","ro","rolig","rose","rund","rust","ryg","ryste","række","ræv","rød","røg","røre","råbe","råd","sag","sagde","sagt","salt","samme","sammen","sand","sang","savn","se","seddel","sejr","selv","sende","sen","seng","side","sidde","siden","sige","sikker","sild","sind","sindsyg","sjov","sjæl","ske","skib","skifte","skille","skinne","skov","skrive","skulle","sky","skyde","skære","skærm","slag","slags","slange","slet","slut","slå","smage","smal","smed","smil","smuk","smør","snak","sne","snild","so","sol","som","sommer","sort","sove","spand","spare","spille","spise","sprede","springe","sprog","spørge","spørgsmål","stald","stand","starte","sted","stige","stikke","stille","stjerne","stol","stor","straks","strand","streng","strid","strikke","strøm","studere","stykke","styrke","stå","stål","støv","støtte","sukker","sur","svag","svar","svare","svend","svær","sværd","syd","synes","synge","sæbe","sælge","sætte","sød","søge","sølv","søn","sørge","søster","så","sådan","tage","tak","takke","tale","tand","tanke","tavs","te","tid","tidlig","til","tilbage","time","ting","tirsdag","tit","tjene","to","tog","toget","tom","torsdag","trappe","trives","tro","trods","tror","træ","trække","træt","trøje","tur","turde","tvivl","tyk","tynd","tys","tysk","tælle","tænke","tæppe","tør","tørre","tåge","tåre","ud","ude","uden","under","undre","ung","uren","uro","vad","vade","vand","vandre","vanskelig","var","varm","varsel","varsom","ved","vej","vel","ven","vende","venlig","verden","vest","vi","vid","vide","vidne","vigtig","vil","vilje","vind","vindue","vinge","vinter","virke","virkelig","vis","vise","vogn","vokse","vold","vores","vred","vrimle","vugge","væk","vælge","værd","værdi","være","væsen","våben","våd","vågne","æble","ædel","ægte","æg","ældre","ændre","ære","ærlig","ærm","ært","ø","øde","øje","øl","ønske","øre","øst","øve","å","åben","ånd","år","åre","årsag","abekat","adgang","adresse","aftryk","agent","akse","aktie","aktiv","alarm","album","alkohol","ambolt","ammunition","amok","ananas","anekdote","anfald","ankel","anklage","anmeldelse","anretning","ansvar","antenne","appelsin","appetit","arena","armbånd","arrest","artikel","aske","aspekt","astma","attentat","automat","avance","bacille","bacon","badekar","bagdel","baggrund","baghave","baglæns","bagside","bajonet","bakterie","balance","balkon","ballade","balsam","bambus","banan","bandage","bande","banke","banner","barak","barber","bark","baron","barriere","base","basilikum","bassin","batteri","bedrift","befaling","begreb","beholder","bekendelse","bekvem","belægning","bemærkning","benzin","beredskab","beretning","berømmelse","besiddelse","bestand","bestilling","betjening","beton","betro","beundring","bevægelse","bibliotek","bidrag","bikube","billedhugger","binde","biograf","birk","biskop","bivoks","bjælde","bjælke","blanket","bleg","blik","blitz","blok","blokade","bluse","blyant","blæk","blære","blæse","blødning","blåbær","bogstav","bombe","bonde","bonus","boom","boplads","bordel","bouillon","bov","brak","brandbil","brandmand","bratsch","bravo","bremse","brochure","broderi","bronze","brudgom","brunst","bruser","brutto","bryggeri","bryllup","brændeovn","bræt","brøler","brønd","budget","bule","bulevard","bunke","bureau","burhøne","bus","butik","bygning","byld","byrde","byste","bæger","bælg","bændel","bøf","bølge","bøn","børs","bøsse","bånd","celle","champagne","chance","charme","chauffør","check","cigaret","cirkus","cisterne","container","creme","cykel","cylinder","daggry","dal","dam","damp","danser","dask","dato","debat","debut","dedikation","defekt","dej","dekan","deklaration","dekoration","delegation","delle","demokrati","depot","desertere","designe","dessert","destillation","detektiv","diadem","dialog","diamant","diarré","diesel","digt","dille","dimension","diplom","direktør","dirigent","disciplin","diskette","diskussion","disput","distance","distrikt","ditto","division","doktrin","dokument","dolk","domino","dommer","dompap","donation","doping","dosis","doven","drab","drage","drama","drejebog","drift","drille","drivhus","drone","dråbe","duel","duft","dukke","dumhed","dunk","dunst","dvale","dværg","dybde","dyne","dynge","dæk","dæmning","dæmon","døbefont","døgn","dørkarm","døtre","ebbe","edderkop","edikt","effekt","ego","egern","eksamen","eksempel","eksil","ekspedition","eksperiment","eksplosion","ekstase","elastik","elegance","elektron","eliksir","elite","eller","emblem","emne","enebær","energi","enhed","enke","enklave","entré","episode","epoke","erfaring","erhverv","erklæring","erobring","erstatning","es","eskadrille","eskimo","essens","etage","etape","etikette","eventyr","evighed","fabrik","fagforening","fakkel","faktor","fakultet","falk","falsk","familie","fanatiker","fane","fantasi","fantom","farm","fasan","fase","fatal","fauna","favorit","fe","feber","februar","fejde","femme","femten","ferie","ferment","feston","festspil","fetich","feud","fiber","fidus","figur","fiktion","filial","filosof","filter","finale","finans","fingerbøl","finke","firkant","firma","fisse","fjer","fjert","fjols","fjæs","flakon","flamme","flanke","flaskehals","fler","flig","flint","flirt","flora","floskel","flue","fløde","fløjte","fløjl","fodbold","foder","fokus","fold","folie","fond","fontæne","foragt","forbandelse","forbedring","forbrydelse","fordel","fordybning","foredrag","forening","forfatter","forfremmelse","forgiftning","forhandling","forhindring","forhør","forklæde","forlag","forlovelse","formand","formel","formue","fornuft","forretning","forsamling","forsikring","forskel","forslag","forsvar","forsøg","fortid","fortov","fortrop","forventning","forvirring","foryngelse","fossil","foto","fragment","frakke","franc","frankering","fratrædelse","fredag","fregat","fremskridt","freske","frihed","frise","frist","fristed","friture","frodig","front","frugtbar","frustration","frøken","fuga","fugt","fumle","fund","fundament","funktion","fup","fuser","fusion","futteral","fylde","fyraften","fyrste","fyrværkeri","fysik","fælde","fælled","fængsel","fænomen","færdsel","føde","fødselsdag","føl","fører","føring","gab","gade","gaffel","galakse","gale","galge","galla","galop","gamble","gammel","garde","gardin","garnison","garage","garn","garniture","gas","gast","gavtyv","gebyr","ged","gejst","gele","gemak","gemme","genbo","generation","geni","genistreg","genre","gentagelse","geologi","gevinst","ghetto","gidsel","gigt","gilde","gimmick","gips","giraf","gitter","gjord","glans","glasur","gletsjer","glorie","glose","gløde","gnist","godbid","godkendelse","godstog","gondol","gople","gordisk","gospel","gourmet","grad","graf","gram","granat","grand","gratis","gravid","grebet","greb","gren","grill","grillbar","grim","grime","grinebider","grisk","groft","grundlov","gruppe","grusom","gryde","grænse","græskar","grøde","grøft","grøntsag","grådig","guld","gulerod","gummi","gymnastik","gynge","gys","gæld","gær","gæst","gø","gødning","gøgl","gøre","gåde","gårsdag","habengut","habit","hagl","haj","hakke","hale","halløj","hals","halvdel","hammer","hamster","handel","handicap","handling","handske","hangar","hankat","hare","harmoni","harpun","hast","hat","havn","havregryn","hed","hede","hegn","heks","helgen","helhed","helikopter","helle","helligdom","helvede","hemmelighed","henblik","hengemme","henrettelse","hensigt","hensyn","heraldik","herberg","herkomst","heroin","herredømme","hersker","hestesko","hierarki","higen","himmel","hindbær","hingst","hinke","hird","historie","hitliste","hitte","hjemmel","hjemstavn","hjord","hjort","hjul","hjørne","hobby","holdeplads","holdning","hollandsk","honning","honorar","hop","horisont","hormon","horn","hotel","hov","hovedpine","hue","hug","hugorm","hukommelse","human","humle","humor","humør","hundehvalp","husar","husdyr","husholdning","hvede","hveps","hverv","hvidløg","hvile","hvirvel","hvisken","hytte","hyæne","hygge","hylde","hylster","hymne","hypnose","hyre","hytte","hæder","hæfte","hæk","hæl","hængekøje","hær","hævn","høflig","højde","højtid","høne","hør","høst","håndjern","håndværk","hårdfør","ide","idræt","idyll","igangsættelse","ildsted","illusion","illustration","imam","imitation","immun","import","impuls","indbrud","indeks","indflydelse","indgang","indhold","indkøb","indretning","indsats","indsigt","indskud","indtægt","industri","infektion","information","ingeniør","ingrediens","initial","initiativ","injektion","inkasso","inkvisition","insekt","inspektør","inspiration","installation","instinkt","institut","instrument","integritet","intellekt","interesse","internat","interval","interview","intrige","invasion","invitation","ironi","isbjerg","isolation","istap","jade","jaguar","jakke","jamboree","januar","jazz","jeans","jern","jernbane","jolle","jonglør","jordbær","journal","jubel","jubilæum","jugend","juice","jul","julemand","jungle","junior","jura","justits","juvel","jyde","jæger","jætte","kabale","kabine","kabinet","kabyss","kadaver","kadet","kaffe","kajak","kakkel","kaktus","kalas","kalk","kalkun","kalorie","kamel","kamera","kammer","kampagne","kanal","kandidat","kanel","kanin","kanon","kant","kantine","kapel","kapital","kapitel","kappe","kapsel","kaptajn","karakter","karamel","karantæne","karat","karbad","karet","karm","karneval","karosse","karriere","karrusel","kartoffel","karton","kaserne","kasino","kaskade","kasse","kastanje","katalog","katapult","katedral","kategori","kateter","katolik","kavaler","kedel","kegle","kejser","kemi","kending","kerne","ketchup","kikkert","kile","kilo","kim","kimono","kineser","kiosk","kiropraktor","kirsebær","kittel","kivi","kjole","klage","klamme","klan","klap","klarinet","klat","klaver","klemme","kliche","klient","klima","klinge","klinik","klip","klippe","klo","kloak","klokke","kloster","klovn","klub","klump","klynge","klæde","kløft","kløver","knage","knap","knark","knast","kneb","knibe","kniv","knogle","knold","knop","knude","knus","knægt","knæk","kobbel","kobber","kode","kogeplade","kok","koks","kolbe","kold","kollega","koloni","kolorit","kombi","komet","komfur","komik","komité","komma","kommando","kommentar","kommode","kommune","kompas","kompleks","komplot","komponist","kompost","koncept","koncern","kondens","kondi","konduktør","konge","kongerige","konkurrence","konserves","konsul","kontakt","kontinent","kontor","kontrakt","kontrol","konvoj","kop","kopi","kor","koral","kork","korn","korps","kors","kort","kosmos","kost","krabbe","kraft","krage","krans","kran","kras","krat","krav","kredit","kreds","krig","krise","kristen","kriterium","kritik","krog","krokodille","krone","krop","krudt","krukke","krumme","krus","krybbe","kryds","krydderi","krystal","kræft","kræmmer","krølle","krønike","kugle","kul","kulde","kuller","kulmination","kultur","kumme","kunstner","kup","kupon","kur","kurv","kusine","kutter","kvadrat","kvalifikation","kvalitet","kvantitet","kvart","kvartal","kvast","kvinde","kvist","kvote","kvæg","kværn","kylling","kyst","kæde","kælder","kæle","kælling","kæmpe","kænguru","kæp","kæreste","kærlighed","kærv","kø","købmand","kød","køje","køkken","køler","køn","køre","køretøj","kåbe","kår","kårde","label","laboratorium","labyrint","lag","lagkage","lak","lakaj","lam","lammelse","lampe","lancet","landing","landskab","langfredag","langsom","lanse","larm","larve","laser","last","latin","latter","laurbær","lavine","led","ledelse","leder","legat","legeme","legende","legering","leje","lejlighed","lejr","leksikon","lem","lemming","leopard","leprechaun","lethed","lever","leverance","levn","levned","licens","lide","lidelse","lidenskab","lig","lighed","ligkiste","ligning","likør","lilje","lim","limousine","lineal","linje","linse","lire","liste","litani","liter","liv","livrem","lo","loge","logik","lokale","lokke","lokomotiv","lomme","loppe","lort","los","lotto","lov","loyalitet","ludder","lue","luft","lukke","lummer","lunge","lunte","lus","lussing","lut","lyd","lygte","lykke","lykkelig","lyn","lyng","lyre","lys","lyst","lysthus","lytte","læbe","læder","læge","lægte","læn","lænke","lære","lærer","læs","læsser","løb","løber","løfte","løg","løgn","løjtnant","løkke","løn","lørdag","løsning","løve","låge","lån","lås","madding","madras","magasin","mage","magi","magister","magnet","maj","majestæt","major","makker","makrel","maksime","maler","maling","malt","mammut","man","mandag","mandat","mandel","manege","mangel","manifest","manøvre","maraton","march","marengs","margen","marinade","marine","mark","marked","markise","marmor","mars","marskal","martyr","maske","maskine","massage","masse","mast","matematik","materiale","matros","mave","medalje","medicin","medie","meditation","medium","mejsel","mekanik","mel","melding","mellemrum","melodi","melon","membran","menig","mening","menneske","menu","mester","metal","meteor","meter","metode","metro","miav","middag","middel","midte","mikrofon","mikroskop","mild","militær","milliard","million","mimik","minaret","mindretal","mine","mineral","mini","minister","mink","minut","mirakel","mis","mission","mistanke","mobil","mode","model","moder","modstand","modul","molekyle","moment","monark","monolog","monopol","monster","montage","monument","mops","mor","moral","mord","morgen","morse","mosaik","moske","most","motel","motiv","motor","mudder","muffe","mug","mulat","muld","muldyr","mule","mulle","multiplum","mumie","mund","munk","mur","mus","muse","museum","musik","muskat","muskel","myg","mynde","mynte","myre","mysterium","mytologi","mæcen","mægler","mælk","mængde","mærke","mæt","møbel","mødding","møde","møg","møl","mølle","mønt","mørke","måge","mål","måne","måske","måtte","nabo","nagle","narkoman","narko","narre","natur","nav","navle","navigation","nedbør","nedtur","negativ","neger","negl","nektar","nerve","net","netto","neutral","ni","niche","nikkel","nips","nisse","nitrogen","niveau","nobel","node","nomade","nominering","nord","norm","normal","notar","note","notits","novelle","nuance","nul","nummer","nun","nutid","ny","nydelse","nyhed","nyre","nysgerrig","næb","nælde","næring","nærvær","næse","næst","næste","næve","nød","nøddetræ","nøgen","nøgle","nøjes","når","oase","oblat","observation","ocean","odder","odel","offer","offentlig","officer","ofring","okse","oktober","oldefar","oldemor","olie","oliven","omdrejning","omelet","omfang","omgang","omgivelse","omhu","omklædning","omkostning","omkvæd","omløb","område","omslag","omstændighed","omsætning","omtale","omvæltning","onani","ond","ondskab","onsdag","opera","operation","opfindelse","opfordring","opførsel","opgave","opgør","ophav","ophold","opkald","oplag","oplevelse","opløsning","opmærksomhed","oprindelse","oprør","opsats","opsigt","opskrift","opslag","opstand","opstilling","optagelse","optakt","optimist","optog","optrapning","opvask","orange","orden","ordfører","ordning","organ","organisation","orgel","orgie","orkan","orkester","orm","ornament","ortodoks","ost","otte","overblik","overenskomst","overfald","overflade","overgang","overhoved","overhøring","overklasse","overlevelse","overmagt","overraskelse","overskrift","overskud","overtagelse","overtrædelse","overtøj","overvægt","pagt","pakke","palads","palet","palme","pamflet","pande","panel","panik","panorama","panser","pant","pap","papegøje","papir","parade","paradis","paragraf","parallel","paraply","parat","parentes","parfume","park","parket","parlament","parodi","part","parti","partner","pas","passage","passager","passion","pastel","pastor","patent","patient","patriot","patron","patrulje","pause","pavillon","pedal","pejs","pelikan","pels","pen","pendul","pengeskab","pennalhus","pension","pepper","perfektion","pergament","periode","perle","perron","person","personale","perspektiv","pest","petroleum","pibe","piet","pige","pik","pil","pille","pilot","pind","pindsvin","pioner","piphans","pirat","pisk","pistol","pjece","pjalt","plade","plads","plage","plan","planet","planke","plantage","plante","plaster","plat","platform","platine","pligt","plombe","plov","pluk","plys","plæne","pløre","pogrom","pointe","pokal","pol","poliklinik","politi","politik","polka","polo","polse","pomade","pomp","pony","pop","poppel","popularitet","porcelæn","pore","porno","port","portal","portier","portion","portræt","position","positiv","post","postbud","postej","postulat","potens","potte","pragt","praksis","praline","pranger","prat","praxis","premie","premiere","pres","presse","prestige","prik","primadonna","primat","primtal","princip","prins","prinsesse","prioritet","pris","privat","privilegium","problem","procent","proces","produkt","profession","professor","profil","profit","program","projekt","prolog","promenade","prop","propaganda","prosa","prostata","protektion","protest","protokol","provins","provision","prut","prædiken","præfekt","præmie","prærie","præsident","præstation","præst","prøve","psykologi","publikum","puddel","pude","puds","pukkel","pulje","puls","pult","puma","pump","punch","punkt","pupil","pur","puritaner","puslespil","pusterum","putte","pyjamas","pynt","pyramide","pyt","pædagog","pægl","pæl","pære","pøbel","pøl","pølse","påfund","påske","påstand","rabarber","rabat","race","rad","radar","radiator","radikal","radio","radius","rage","raket","ramme","rampe","ranch","rand","rang","rap","rapsodi","raritet","ras","raseri","rasp","rast","ration","rav","ravn","reaktion","realitet","reb","rebel","reception","recept","redaktion","redelig","redning","redskab","reduktion","reference","refleks","reform","refræn","regel","regering","register","regn","regnbue","regning","regulering","reje","rejse","reklame","rekord","rekrut","rektor","relief","religion","rem","remise","ren","rendesten","renæssance","reol","reparation","repertoire","reportage","repræsentation","reptil","republik","reserve","respekt","rest","restaurant","resultat","ret","retning","retorik","retræte","retsag","retssal","rev","revy","ribben","ridder","rids","riffel","rigdom","rige","rille","rim","rimelig","ring","rip","risiko","rist","ritual","rival","ro","robot","rock","rocker","roderi","roe","rogn","rokade","roker","rolle","rom","roman","romantik","rondel","ror","rose","rosin","rotation","rov","rubin","rude","ruin","rul","rulle","rum","rumba","runddel","rundkreds","rune","rus","ruse","rusk","rust","rustning","rutine","ryg","rygte","ryk","rytme","række","rækkehus","rækkevidde","ræsonnement","ræv","rød","røg","røgelse","røllike","rønne","rør","røre","røst","rå","råb","råd","rådhus","rådyr","råvare","sabel","sabotage","sadel","safir","saft","sag","saga","saks","sal","salat","saldo","salme","salon","salt","salut","salve","samarbejde","samfund","samklang","samling","samme","sammen","sammenligning","samtale","sand","sandal","sandhed","sandwich","sang","sanktion","sardin","satellit","satin","satire","sats","sav","scene","schæfer","score","seance","seddel","segl","segment","sejl","sejr","sejre","sekretær","seks","sekt","sektor","sekund","sekvens","selleri","selskab","semafor","semester","seminar","senat","seng","senior","sensation","sentens","september","serenade","serie","serum","service","serviet","session","signal","signatur","sikkerhed","sikring","sild","silke","simre","sind","sindsyg","sinke","sirene","situation","skab","skabelon","skade","skaft","skak","skakt","skal","skala","skalk","skam","skammel","skanse","skar","skare","skat","skede","skelet","skema","skepsis","skib","skibbrud","skidt","skifte","skildpadde","skilt","skimmel","skitse","skive","skjold","skjorte","sko","skole","skorpe","skov","skovl","skrald","skrammel","skranke","skrap","skred","skrift","skrig","skrin","skrivebord","skrot","skrubbe","skrue","skrædder","skræk","skrænt","skrå","skud","skuffe","skulptur","skum","skur","skurk","skvalder","sky","skyde","skygge","skyld","skylle","skyskraber","skytte","skæbne","skæg","skæl","skælv","skændsel","skænk","skærm","skærsild","skød","skøde","skøge","skøn","skørt","skåbe","skål","slag","slange","slank","slaraffenland","slave","slethvar","slim","slips","slot","sludder","slugt","slum","slurk","sluse","slutning","slæde","slægt","slæng","sløjfe","slør","sløv","smag","smal","smed","smelte","smerte","smede","smil","sminke","smug","smugle","smule","smut","smykke","smæde","smæk","smør","snak","snare","sne","snegl","snert","snige","snit","snor","snu","snude","snyde","so","sofa","sol","soldat","solist","solo","som","sommer","sommerfugl","sonate","sondre","sove","spade","spalte","spand","spansk","spar","spare","spark","spas","spatel","specialist","spejl","spektakel","spelt","spids","spil","spild","spille","spinat","spion","spiral","spire","spiritus","spor","sport","sprog","sprække","sprænge","spurv","spyd","spøg","spøgelse","spæk","spænde","spænding","spøge","spørge","spørgsmål","stabel","stad","stade","stadium","stafet","stage","stald","stamme","stampe","stand","standard","stang","stank","start","station","statistik","statue","status","stav","stavelse","sted","stemme","stemning","sten","stencil","stift","stige","stil","stilk","stilling","stimulans","stjerne","stok","stol","stole","stop","stor","stork","storm","straffe","strand","strategi","streg","strejf","streng","stribe","strid","strikke","strop","strube","struktur","strøm","strå","stråle","stub","studie","studium","stue","stump","stund","stykke","styr","styrke","stængel","stævne","støbe","stød","støj","støtte","støv","stå","stål","stålsætte","substans","suk","sukker","sult","sum","sump","sund","super","suppe","sur","surdej","sus","sut","svag","svamp","svane","svans","svare","sved","svejs","svend","svie","sviger","svigte","svimmel","svin","svirp","svoger","svulme","sværd","sværm","svøbe","sy","syd","sygepleje","syl","symbol","symfoni","sympati","symptom","syn","synd","syndflod","synge","synke","synode","syntese","system","sytten","syv","sæbe","sæd","sæk","sæl","sælge","sænkning","særeje","sæson","sæt","sætning","sø","sød","søge","søjle","sølv","søm","søn","søndag","sørge","søster","søvn","så","sål","sår","såre","tabel","tablet","tabu","takt","taktik","tale","talent","tallerken","tam","tamp","tand","tandhjul","tang","tanke","tante","tap","tape","tappe","tarif","tarm","tarv","taske","tavle","taxa","te","teater","tegn","tegning","teknologi","tekst","tekstil","telefon","telt","tema","temperatur","tempel","tempo","tendens","tenor","teologi","teori","terapeut","termin","termostat","terning","terrasse","territorium","terror","test","testamente","tekst","ti","tid","tidevand","tidsskrift","tiger","tik","tilbud","tilfælde","tilgang","tilhænger","tilladelse","tillid","tilstand","tilværelse","time","tinde","ting","tirsdag","titel","tivoli","tjald","tjeneste","tjener","to","tobak","tog","tolerance","tolk","tom","tomat","tomme","tone","tonic","top","torden","torn","torso","tortur","total","tradition","trafik","tragedie","traktor","trampe","trane","transit","transport","trapez","trappe","traume","travl","tre","tredive","trekant","tremme","trenchcoat","trend","tres","tribune","trick","trille","trin","trinitet","trio","trippel","triumf","trivsel","tro","trofæ","tromle","tromme","trompet","trone","trop","trope","tros","trosse","trottoir","truck","trussel","tryg","tryk","trylle","træ","træk","træl","træne","trøje","trøst","tråd","tud","tudse","tulipan","tumle","tumor","tumult","tunge","tunnel","tur","turban","turbine","turist","turnering","tusch","tusind","tusmørke","tvang","tvebak","tvilling","tvinge","tvist","tvivl","tvær","ty","tyfon","tygge","tyk","tynd","type","tyr","tyran","tys","tysk","tæft","tælle","tæmme","tænde","tænke","tæppe","tærskel","tæt","tø","tøj","tømme","tømrer","tønde","tør","tørklæde","tørre","tørst","tøve","tå","tåge","tålmod","tåre","udbrud","uddannelse","udflugt","udfordring","udførsel","udgang","udgivelse","udkant","udkast","udland","udlæg","udløb","udmærkelse","udnævnelse","udråb","udsagn","udsalg","udsigt","udskrift","udskud","udslæt","udspring","udstilling","udstyr","udtalelse","udtryk","udvalg","udvej","udvikling","udøver","uge","ugle","uheld","uhyre","uld","ulige","ulv","ulykke","umage","und","under","underholdning","underlag","underskrift","undersøgelse","undertrykkelse","undervisning","undtagelse","undulat","ungdom","uniform","union","univers","universitet","unåde","ur","urt","urte","utopi","vabel","vad","vade","vaffel","vagt","vakle","valg","valmue","valnød","vals","valuta","vampyr","van","vand","vandring","vane","vange","vanilje","vanskelig","vante","var","vare","varetægt","varig","varm","varsel","varsko","varte","vasal","vase","vask","ved","vederlag","vegetar","vej","vejr","veksel","vel","velfærd","velkomst","velle","velsignelse","velstand","vemod","ven","vende","venlig","vente","ventil","veranda","verbal","verden","verifikation","version","vest","veto","vi","vibe","video","videre","vidne","vidnesbyrd","vidunder","vielse","vig","vige","vigtig","vikar","viking","vild","vildnis","vilje","villa","vin","vind","vindue","vinge","vinkel","vinter","violin","vippe","virak","virke","virkelig","virksomhed","virtuos","virus","vis","visdom","vise","vision","visit","viskelæder","vismand","vissen","vittighed","vogn","vokal","vokse","vold","voldgrav","voldgift","volumen","vorte","vove","vrag","vred","vride","vrist","vulkan","vurdering","væbner","vædde","væg","vægt","væk","vækst","vælge","vælt","værd","værdi","være","værk","værktøj","værn","vært","væsen","væske","væv","våben","våd","vågne","vånd","xylofon","yacht","yderlig","ydmyg","yngel","yngle","yoga","yoghurt","ypsilon","yver","zebra","zone","zoo","æble","ædel","æg","ægte","ækvator","ælde","ælling","ændre","ængstelse","ærbødig","ære","ærgerlig","ærinde","ærke","ærlig","ærm","ært","æsel","æt","ætsning","ø","øde","ødelægge","ødemark","øje","øjeblik","øjenlåg","økse","øl","øm","ømhed","ønske","ør","øre","ørken","ørn","øse","øst","øve","øvelse","øverst","øvrig","å","åben","åbenbaring","åbning","ånd","åndedrag","åndelig","år","åre","århundrede","årlig","årsag","årstid","årti","årtusind","ås","åsted"];
 
+var WORDLIST_EN = ["abacus","abandon","abbreviation","abdomen","ability","abolish","abroad","absence","absolute","absorb","abstract","abundance","academy","accelerate","accent","accept","access","accident","acclaim","accommodate","accompany","accomplish","accord","account","accumulate","accurate","accuse","achieve","acid","acknowledge","acoustic","acquire","across","act","action","active","activity","actor","actual","adapt","add","addict","address","adequate","adjust","administer","admire","admission","admit","adopt","adult","advance","advantage","adventure","advertise","advice","advise","advocate","affair","affect","afford","afraid","after","afternoon","again","against","age","agency","agenda","agent","aggressive","ago","agree","agriculture","ahead","aid","aim","air","aircraft","airline","airport","alarm","album","alcohol","alert","alien","align","alive","allege","allergy","alliance","allocate","allow","ally","almost","alone","along","already","also","alter","although","always","amateur","amaze","ambassador","ambition","amount","amuse","analysis","analyst","ancestor","anchor","ancient","angel","anger","angle","animal","ankle","anniversary","announce","annual","another","answer","anthem","anticipate","anxiety","anybody","anything","anywhere","apart","apartment","apologize","apparent","appeal","appear","appetite","applaud","apple","appliance","application","apply","appoint","appreciate","approach","appropriate","approve","apricot","archive","area","argue","arise","arm","armor","army","around","arrange","arrest","arrival","arrive","arrow","art","article","artist","aside","ask","asleep","aspect","assault","assemble","assert","assess","asset","assign","assist","associate","assume","assure","athlete","atmosphere","attach","attack","attempt","attend","attention","attitude","attract","auction","audience","author","authority","automatic","autumn","available","avenue","average","avoid","awake","award","aware","awesome","awful","awkward","axis","baby","bachelor","back","backpack","bacon","bacteria","badge","badly","bag","bake","balance","ball","balloon","ballot","banana","band","bank","banner","bar","barely","bargain","barrel","barrier","base","baseball","basic","basin","basis","basket","basketball","bat","bath","bathroom","battery","battle","bay","beach","beam","bean","bear","beard","beast","beat","beautiful","beauty","because","become","bedroom","beef","beer","beetle","before","begin","behave","behavior","behind","being","belief","believe","bell","belly","belong","below","belt","bench","bend","beneath","benefit","berry","beside","best","betray","better","between","beyond","bicycle","big","bike","bill","billion","bind","biology","bird","birth","birthday","biscuit","bishop","bite","bitter","black","blade","blame","blank","blanket","blast","bleed","blend","bless","blind","blink","block","blood","blossom","blouse","blow","blue","blur","board","boast","boat","body","boil","bold","bolt","bomb","bond","bone","bonus","book","boost","boot","border","bore","borrow","boss","both","bother","bottle","bottom","bounce","boundary","bow","bowl","box","boy","brain","branch","brand","brave","bread","break","breakfast","breast","breath","breathe","breed","breeze","brick","bridge","brief","bright","brilliant","bring","broad","broadcast","broccoli","broken","bronze","brook","brother","brown","brush","bubble","bucket","budget","buffalo","build","bullet","bunch","burden","bureau","burn","burst","bury","bus","bush","business","busy","butter","butterfly","button","buy","cabbage","cabin","cabinet","cable","cafe","cage","cake","calculate","calendar","call","calm","camera","camp","campaign","campus","cancel","candidate","candle","candy","canvas","capable","capacity","capital","captain","capture","carbon","card","care","career","careful","cargo","carpet","carrot","carry","cartoon","carve","case","cash","cast","castle","casual","catalog","catch","category","cattle","caught","cause","caution","cave","cease","ceiling","celebrate","cell","cemetery","center","central","century","ceremony","certain","certificate","chain","chair","chairman","challenge","chamber","champion","chance","change","channel","chaos","chapter","character","charge","charity","charm","chart","chase","cheap","cheat","check","cheek","cheer","cheese","chef","chemical","cherry","chess","chest","chicken","chief","child","childhood","chill","chimney","chip","chocolate","choice","choose","chronic","church","cigarette","cinema","circle","circuit","circumstance","citizen","city","civil","civilian","claim","clap","clarify","class","classic","classroom","claw","clay","clean","clear","clerk","clever","click","client","cliff","climate","climb","cling","clinic","clip","clock","clone","close","cloth","clothing","cloud","club","clue","cluster","coach","coal","coalition","coast","coat","code","coffee","cognitive","coin","cold","collapse","collar","colleague","collect","collection","college","colonial","colony","color","column","combat","combine","come","comedy","comfort","command","comment","commerce","commercial","commission","commit","committee","common","communicate","community","company","compare","compel","compete","complain","complete","complex","complicate","component","compose","composition","compound","comprehensive","computer","concentrate","concept","concern","concert","conclude","concrete","condition","conduct","conference","confess","confidence","confirm","conflict","confront","confuse","congress","connect","conscious","consensus","consequence","conservative","consider","consistent","constant","constitute","constrain","construct","consult","consume","contact","contain","contemporary","content","contest","context","continue","contract","contrast","contribute","control","controversy","convention","conversation","convert","convict","convince","cook","cookie","cool","cooperate","cope","copy","cord","core","corn","corner","corporate","correct","correspond","corridor","corrupt","cost","costume","cottage","cotton","couch","cough","could","council","counsel","count","counter","country","county","couple","courage","course","court","cousin","cover","cow","crack","craft","crash","crazy","cream","create","creative","creature","credit","crew","crime","criminal","crisis","criteria","critic","criticism","crop","cross","crowd","crucial","cruel","cruise","crush","cry","crystal","cube","cultural","culture","cup","curious","current","curriculum","curtain","curve","cushion","custom","customer","cut","cycle","cylinder","dad","daily","dairy","damage","damp","dance","danger","dare","dark","darling","data","database","date","daughter","dawn","day","dead","deadly","deal","dear","death","debate","debt","decade","decay","deceive","decent","decide","decision","deck","declare","decline","decorate","decrease","deep","deer","defeat","defend","defendant","defense","deficit","define","definitely","degree","delay","deliberate","delicate","deliver","delivery","demand","democracy","demonstrate","deny","depart","department","depend","deploy","deposit","depress","deputy","derive","describe","desert","deserve","design","designate","desire","desk","desperate","despite","destination","destroy","detail","detect","determine","develop","device","devote","dialogue","diamond","diary","dictate","diet","differ","difference","different","difficult","digital","dignity","dilemma","dimension","diminish","dinner","diplomat","direct","direction","director","dirt","disability","disagree","disappear","disaster","discipline","discount","discourse","discover","discrimination","discuss","disease","disguise","disgust","dish","dismiss","disorder","display","dispute","distance","distant","distinct","distinguish","distribute","district","disturb","diverse","divide","divine","division","divorce","doctor","document","dog","doll","dolphin","domain","domestic","dominant","dominate","donate","donkey","donor","door","dose","double","doubt","dove","down","downtown","dozen","draft","drag","dragon","drain","drama","dramatic","draw","drawer","dream","dress","drift","drill","drink","drive","driver","drop","drought","drown","drug","drum","drunk","dry","duck","due","dump","during","dust","duty","dwell","dynamic","eager","eagle","early","earn","earth","earthquake","ease","east","eastern","easy","echo","ecology","economic","economy","edge","edition","editor","educate","education","effect","effective","efficiency","efficient","effort","egg","eight","either","elaborate","elbow","elder","elect","election","electric","electronic","elegant","element","elephant","elevate","eliminate","elite","elsewhere","embassy","embrace","emerge","emergency","emission","emotion","emphasis","empire","employ","employee","empty","enable","enclose","encounter","encourage","end","enemy","energy","enforce","engage","engine","engineer","enhance","enjoy","enormous","enough","enrich","ensure","enter","enterprise","entertain","entire","entrance","entry","envelope","environment","episode","equal","equipment","era","error","escape","especially","essay","essential","establish","estate","estimate","ethics","ethnic","evaluate","even","evening","event","eventually","ever","every","everybody","everyday","evidence","evil","evolution","evolve","exact","examine","example","exceed","excellent","except","exception","exchange","excite","exclude","exclusive","excuse","execute","executive","exercise","exhibit","exist","exotic","expand","expect","expense","expensive","experience","experiment","expert","explain","explode","exploit","explore","export","expose","express","extend","extension","extensive","extent","external","extra","extraordinary","extreme","eye","fabric","face","facilitate","facility","fact","factor","factory","faculty","fade","fail","failure","fair","fairly","faith","fall","false","familiar","family","famous","fan","fantasy","far","fare","farm","farmer","fascinate","fashion","fast","fat","fatal","fate","father","fatigue","fault","favor","favorite","fear","feather","feature","federal","fee","feed","feel","fellow","female","fence","ferry","fertile","festival","fetch","fever","few","fiber","fiction","field","fierce","fifteen","fifth","fifty","fight","figure","file","fill","film","filter","final","finally","finance","financial","find","fine","finger","finish","fire","firm","first","fish","fishing","fitness","five","fix","flag","flame","flash","flat","flavor","flee","fleet","flesh","flexible","flight","float","flood","floor","flour","flow","flower","fluid","flush","fly","foam","focus","fog","fold","folk","follow","food","fool","foot","football","forbid","force","forecast","foreign","forest","forever","forget","forgive","fork","form","formal","format","formation","former","formula","forth","fortune","forty","forum","forward","fossil","foster","found","foundation","founder","four","fourth","fox","fraction","fragile","fragment","frame","framework","frank","fraud","free","freedom","freeze","frequency","frequent","fresh","friend","friendly","frighten","frog","from","front","frontier","frost","frown","frozen","fruit","frustrate","fuel","fulfill","full","fun","function","fund","fundamental","funeral","funny","furniture","furthermore","future","gain","galaxy","gallery","game","gang","gap","garage","garbage","garden","garlic","gas","gate","gather","gay","gaze","gear","gender","gene","general","generate","generation","generous","genetic","genius","gentle","gentleman","genuine","geography","gesture","get","ghost","giant","gift","girl","girlfriend","give","glad","glance","glass","global","globe","glory","glove","glow","glue","goal","gold","golden","good","goose","govern","government","governor","grab","grace","grade","gradual","graduate","grain","grand","grandfather","grandmother","grant","graphic","grasp","grass","grateful","grave","gravity","gray","great","green","greet","grief","grin","grind","grocery","gross","ground","group","grow","growth","guarantee","guard","guess","guest","guide","guideline","guilt","guilty","guitar","gun","gut","guy","gym","habit","habitat","hair","half","hall","halt","hammer","hand","handful","handle","hang","happen","happy","harbor","hard","hardly","harm","harmony","harsh","harvest","hat","hate","haul","haunt","have","hazard","head","headline","headquarters","heal","health","healthy","hear","hearing","heart","heat","heaven","heavily","heavy","heel","height","helicopter","hell","hello","helmet","help","helpful","hen","hence","herb","here","heritage","hero","herself","hide","high","highlight","highway","hill","hint","hip","hire","historian","history","hit","hobby","hockey","hold","hole","holiday","holy","home","homework","honest","honor","hook","hope","horizon","horror","horse","hospital","host","hostile","hot","hotel","hour","house","household","housing","however","huge","human","humor","hundred","hunger","hungry","hunt","hunter","hurry","hurt","husband","hut","hydrogen","hypothesis","ice","icon","idea","ideal","identify","identity","ideology","ignore","ill","illegal","illness","illustrate","image","imagination","imagine","immediate","immigrant","immune","impact","implement","implication","imply","import","impose","impress","impression","improve","impulse","incentive","incident","include","income","incorporate","increase","incredible","indeed","independence","independent","index","indicate","individual","industrial","industry","infant","infection","inflation","influence","inform","information","ingredient","initial","initiative","injury","inner","innocent","innovation","input","inquiry","insect","insert","inside","insist","inspect","inspire","install","instance","instead","institution","instruction","instrument","insurance","intact","integrate","intellectual","intelligence","intend","intense","intention","interact","interest","interior","internal","international","internet","interpret","intervention","interview","intimate","introduce","invade","invasion","invent","invest","investigate","investment","invite","involve","iron","irony","island","isolate","issue","item","itself","ivory","jacket","jail","jam","jar","jaw","jazz","jeans","jet","jewel","job","join","joint","joke","journal","journey","joy","judge","judgment","juice","jump","jungle","junior","jury","just","justice","justify","keen","keep","key","kick","kid","kidnap","kidney","kill","kilometer","kind","king","kingdom","kiss","kitchen","kite","knee","knife","knock","know","knowledge","label","labor","laboratory","lack","lady","lake","lamp","land","landscape","language","lap","large","laser","last","late","later","latter","laugh","launch","law","lawn","lawsuit","lawyer","layer","layout","lazy","lead","leader","leadership","leading","leaf","league","lean","learn","least","leather","leave","lecture","left","leg","legacy","legal","legend","legislation","legitimate","leisure","lemon","length","lens","lesson","letter","level","liberal","liberty","library","license","life","lifestyle","lifetime","lift","light","lightning","like","likely","limit","limitation","line","link","lion","lip","liquid","list","listen","literally","literary","literature","little","live","liver","living","load","loan","lobby","local","locate","location","lock","log","logic","lonely","long","look","loop","loose","lord","lose","loss","lost","lot","loud","love","lovely","lover","low","lower","loyal","luck","lucky","luggage","lunch","lung","luxury","machine","mad","magazine","magic","magnet","magnificent","mail","main","mainly","maintain","major","majority","make","maker","male","mall","man","manage","management","manager","manner","manufacture","manufacturer","many","map","marble","march","margin","mark","market","marriage","married","marry","mask","mass","massive","master","match","mate","material","math","matter","maximum","maybe","mayor","meal","mean","meaning","meanwhile","measure","meat","mechanism","media","medical","medication","medicine","medium","meet","meeting","member","membership","memory","mental","mention","mentor","menu","merchant","mercy","mere","merely","merge","merit","merry","mess","message","metal","metaphor","method","middle","midnight","might","mild","military","milk","million","mind","mine","mineral","minimum","minister","minor","minority","minute","miracle","mirror","miss","missile","mission","mistake","mix","mixture","mobile","mode","model","moderate","modern","modest","modify","molecule","moment","momentum","money","monitor","monkey","monster","month","monument","mood","moon","moral","moreover","morning","mortgage","mosquito","most","mostly","mother","motion","motivate","motor","mountain","mouse","mouth","move","movement","movie","much","multiple","murder","muscle","museum","mushroom","music","musical","must","mutual","mystery","myth","nail","naked","name","narrative","narrow","nation","national","native","natural","naturally","nature","navy","near","nearby","nearly","neat","necessarily","necessary","neck","need","needle","negative","neglect","negotiate","neighbor","neighborhood","neither","nerve","nervous","nest","net","network","neutral","never","nevertheless","new","newly","news","newspaper","next","nice","night","nine","nobody","nod","noise","nominate","none","nonetheless","noon","nor","norm","normal","north","northern","nose","notable","note","nothing","notice","notion","novel","now","nowhere","nuclear","number","numerous","nurse","nut","object","objective","obligation","observation","observe","obstacle","obtain","obvious","occasion","occupy","occur","ocean","odd","odds","offend","offense","offensive","offer","office","officer","official","often","oil","okay","old","olive","once","one","ongoing","onion","online","only","onto","open","opening","operate","operation","operator","opinion","opponent","opportunity","oppose","opposite","opposition","option","orange","orbit","orchestra","order","ordinary","organ","organic","organization","organize","orientation","origin","original","other","otherwise","ought","ounce","outcome","outdoor","outer","outlet","output","outside","outstanding","oven","overall","overcome","overlook","overnight","overseas","overtime","owe","own","owner","oxygen","pace","pack","package","packet","page","pain","painful","paint","painter","pair","palace","pale","palm","pan","panel","panic","pant","paper","paragraph","parallel","parent","park","parking","part","partial","participant","participate","particular","partly","partner","party","pass","passage","passenger","passion","passport","past","pastor","pat","patch","path","patience","patient","patrol","pattern","pause","pay","payment","peace","peaceful","peak","peanut","peasant","peculiar","peer","penalty","pencil","penny","pension","people","pepper","per","perceive","percent","percentage","perception","perfect","perform","performance","perhaps","period","permanent","permission","permit","person","personal","personality","personnel","perspective","persuade","pet","phase","phenomenon","philosophy","phone","photo","photograph","phrase","physical","physician","physics","piano","pick","picture","pie","piece","pig","pile","pill","pillow","pilot","pin","pine","pink","pioneer","pipe","pitch","pizza","place","plain","plan","plane","planet","plant","plastic","plate","platform","play","player","please","pleasure","plenty","plot","plug","plunge","plus","pocket","poem","poet","poetry","point","poison","pole","police","policy","political","politician","politics","poll","pollution","pond","pool","poor","pop","popular","population","porch","port","portion","portrait","portray","pose","position","positive","possess","possibility","possible","possibly","post","potato","potential","pound","pour","poverty","powder","power","powerful","practical","practice","praise","pray","prayer","precious","precise","predict","prefer","pregnancy","pregnant","premise","premium","prepare","prescription","presence","present","preserve","president","press","pressure","presumably","pretend","pretty","prevent","previous","previously","price","pride","priest","primarily","primary","prime","principal","principle","print","prior","priority","prison","prisoner","privacy","private","privilege","prize","probably","problem","procedure","proceed","process","produce","product","production","profession","professional","professor","profile","profit","program","progress","project","prominent","promise","promote","prompt","proof","proper","properly","property","proportion","proposal","propose","prosecutor","prospect","protect","protection","protein","protest","proud","prove","provide","province","provision","psychological","psychology","public","publication","publish","pull","pulse","pump","punch","punish","punishment","pupil","purchase","pure","purple","purpose","purse","pursue","push","put","puzzle","qualify","quality","quantity","quarter","queen","question","quick","quiet","quit","quite","quote","rabbit","race","racial","radical","radio","rage","rail","railroad","rain","raise","rally","ranch","random","range","rank","rapid","rare","rarely","rat","rate","rather","rating","ratio","rational","raw","reach","react","reaction","read","reader","reading","ready","real","reality","realize","really","rear","reason","reasonable","rebel","rebuild","recall","receive","recent","recently","recipe","recognition","recognize","recommend","record","recover","recovery","recruit","reduce","reduction","refer","reference","reflect","reflection","reform","refugee","refuse","regard","regarding","regardless","regime","region","register","regret","regular","regulate","regulation","rehab","reign","reinforce","reject","relate","relation","relationship","relative","relax","release","relevant","relief","religion","religious","rely","remain","remark","remarkable","remedy","remember","remind","remote","removal","remove","render","renew","rent","repair","repeat","replace","reply","report","reporter","represent","representation","republic","republican","reputation","request","require","requirement","research","resemble","reservation","reserve","reside","resident","resign","resist","resistance","resolution","resolve","resort","resource","respond","response","responsibility","responsible","rest","restaurant","restore","restrict","result","retail","retain","retire","retreat","return","reveal","revelation","revenue","reverse","review","revolution","reward","rhythm","rice","rich","ride","rifle","right","ring","riot","rise","risk","ritual","rival","river","road","robot","rock","rocket","rod","role","roll","romantic","roof","room","root","rope","rose","rough","round","route","routine","row","royal","rub","rule","run","runner","running","rural","rush","sacred","sad","safe","safety","sail","saint","sake","salad","salary","sale","sales","salmon","salt","same","sample","sanction","sand","satellite","satisfaction","satisfy","sauce","save","saving","say","scale","scan","scandal","scare","scatter","scene","schedule","scheme","scholar","scholarship","school","science","scientific","scientist","scope","score","scratch","scream","screen","script","sea","search","season","seat","second","secret","secretary","section","sector","secure","security","seed","seek","segment","seize","select","selection","self","sell","senate","senator","send","senior","sense","sensitive","sentence","separate","sequence","series","serious","serve","service","session","set","setting","settle","settlement","seven","several","severe","sex","sexual","shade","shadow","shake","shall","shallow","shame","shape","share","sharp","she","shed","sheep","sheer","sheet","shelf","shell","shelter","shift","shine","ship","shirt","shock","shoe","shoot","shooting","shop","shore","short","shortly","shot","should","shoulder","shout","show","shower","shrink","shrug","shut","shy","sick","side","sigh","sight","sign","signal","signature","significance","significant","silence","silent","silk","silly","silver","similar","simple","simply","sin","since","sing","singer","single","sink","sir","sister","sit","site","situation","six","sixteen","sixty","size","ski","skill","skin","skirt","skull","sky","slave","sleep","slice","slide","slight","slip","slope","slow","small","smart","smell","smile","smoke","smooth","snap","snow","soak","soap","soccer","social","society","sock","soft","software","soil","solar","soldier","solid","solution","solve","somebody","somehow","someone","something","sometimes","somewhat","somewhere","son","song","soon","sophisticated","sorry","sort","soul","sound","soup","source","south","southern","space","spare","spark","speak","speaker","special","specialist","species","specific","spectrum","speech","speed","spell","spend","sphere","spill","spin","spirit","spiritual","split","spokesman","sponsor","spoon","sport","spot","spray","spread","spring","square","squeeze","stability","stable","staff","stage","stair","stake","stamp","stance","stand","standard","standing","star","stare","start","state","statement","station","statistics","statue","status","stay","steady","steal","steam","steel","steep","stem","step","stick","stiff","still","stimulate","stir","stock","stomach","stone","stop","storage","store","storm","story","straight","strain","strange","stranger","strategic","strategy","straw","stream","street","strength","strengthen","stress","stretch","strict","strike","string","strip","stroke","strong","strongly","structure","struggle","student","studio","study","stuff","stupid","style","subject","submit","subsequent","subsidy","substance","substantial","substitute","succeed","success","successful","such","sudden","suddenly","sue","suffer","sufficient","sugar","suggest","suggestion","suicide","suit","sum","summary","summer","summit","sun","super","superior","supermarket","supply","support","supporter","suppose","supreme","sure","surely","surface","surgery","surplus","surprise","surrender","surround","survey","survival","survive","survivor","suspect","suspend","sustain","swallow","swear","sweat","sweater","sweep","sweet","swim","swimming","swing","switch","symbol","sympathy","symptom","syndrome","system","table","tablespoon","tactic","tail","take","tale","talent","talk","tall","tank","tap","tape","target","task","taste","tax","taxi","tea","teach","teacher","teaching","team","tear","technical","technique","technology","teenager","telephone","telescope","television","tell","temperature","temple","temporary","ten","tend","tendency","tennis","tension","tent","term","terrain","terrible","territory","terror","test","testify","testimony","text","texture","thank","theme","then","theology","theory","therapy","there","therefore","these","they","thick","thin","thing","think","thinking","third","thirty","this","though","thought","thousand","threat","threaten","three","thrive","throat","through","throughout","throw","thumb","thus","ticket","tide","tie","tight","till","timber","time","tiny","tip","tire","tired","tissue","title","tobacco","today","toe","together","toilet","tolerance","toll","tomato","tomorrow","tone","tongue","tonight","tool","tooth","top","topic","torture","toss","total","totally","touch","tough","tour","tourist","tournament","toward","towards","tower","town","toy","trace","track","trade","tradition","traditional","traffic","tragedy","trail","train","training","trait","transaction","transfer","transform","transition","translate","transportation","trap","trash","travel","tray","treasure","treat","treatment","treaty","tree","tremendous","trend","trial","tribe","trick","trigger","trip","triumph","troop","tropical","trouble","truck","true","truly","trust","truth","try","tube","tumor","tune","tunnel","turn","twelve","twenty","twice","twin","twist","two","type","typical","ugly","ultimate","ultimately","umbrella","unable","uncertainty","uncle","under","undergo","understand","understanding","undertake","unemployment","unfair","unfold","unfortunately","uniform","union","unique","unit","unite","unity","universal","universe","university","unknown","unless","unlike","unlikely","until","unusual","up","upon","upper","upset","urban","urge","use","used","useful","user","usual","usually","utility","vacation","vaccine","vacuum","valid","valley","valuable","value","van","variable","variation","variety","various","vary","vast","vegetable","vehicle","venture","verbal","verdict","version","versus","very","vessel","veteran","via","victim","victory","video","view","viewer","village","violate","violation","violence","violent","virtual","virtue","virus","visible","vision","visit","visitor","visual","vital","voice","volume","voluntary","volunteer","vote","voter","vulnerable","wage","wait","wake","walk","wall","wander","want","war","warm","warn","warning","warrior","wash","waste","watch","water","wave","way","weak","weakness","wealth","wealthy","weapon","wear","weather","web","website","wedding","week","weekend","weekly","weigh","weight","welcome","welfare","well","west","western","wet","whale","what","whatever","wheat","wheel","when","whenever","where","whereas","wherever","whether","which","while","whisper","white","who","whole","whom","whose","why","wide","widely","widespread","wife","wild","will","willing","win","wind","window","wine","wing","winner","winter","wipe","wire","wisdom","wise","wish","with","withdraw","within","without","witness","woman","wonder","wonderful","wood","wooden","word","work","worker","working","workout","workshop","world","worried","worry","worse","worship","worst","worth","worthy","would","wound","wrap","wrist","write","writer","writing","wrong","yard","yeah","year","yell","yellow","yes","yesterday","yet","yield","young","youngster","your","yours","yourself","youth","zero","zone","zoo"];
 ```
-password-generator
-security-tools
-cryptography
-vanilla-javascript
-static-site
-devtools
-privacy
-open-source
-passphrase
-otp
-uuid
-api-key
-jwt
-oauth
-webhook
-```
-
-## Website
-
-If GitHub Pages is enabled, link: `https://Mureren94.github.io/password-generator/`
-

@@ -2,6 +2,8 @@
 
 > Cryptographically secure password, token, and secret generator. Single-file HTML app with zero dependencies, powered by vanilla JavaScript and `crypto.getRandomValues()`.
 
+![Alphanumeric password generator](password-generator-01-alphanumeric.png)
+
 ---
 
 ## Table of Contents
@@ -30,6 +32,8 @@
 
 > Alternatively, host it on **GitHub Pages** for an always-available online version.
 
+![Passphrase generator](password-generator-02-passphrase.png)
+
 ---
 
 ## Features
@@ -47,7 +51,10 @@
 - **Docker/.env-safe mode** — avoids characters that break in `.env` files and Docker Compose (`$'"\`!&#*?=:`).
 - **Custom wordlist upload** — upload your own dictionary for passphrase generation.
 - **Keyboard shortcut** — `Ctrl+Enter` (Windows/Linux) or `Cmd+Enter` (Mac) to generate.
+- **Zoom toggle** — switch between compact and large UI with one click. Preference saved in localStorage.
 - **Zero dependencies** — everything is vanilla HTML, CSS, and JavaScript in a single HTML file plus supporting scripts.
+
+![PIN code generator](password-generator-03-pin-code.png)
 
 ---
 
@@ -63,6 +70,8 @@
 | **Pronounceable** | Phonetic syllables that can be spoken aloud | Syllable count (3–8) |
 | **OTP / TOTP** | Base32 secret key for authenticator apps | 16/32 characters, QR code output |
 
+![OTP / TOTP QR code](password-generator-04-otp-totp.png)
+
 ### Cryptographic Noise & Hashes
 
 | Type | Description | Key Settings |
@@ -70,7 +79,7 @@
 | **Salt** | Random value added before hashing | Length (16/32/64 bytes), format (Hex/Base64) |
 | **Pepper** | Secret system value added during hashing | Length (32/64/128 bytes), format (Hex/Base64) |
 | **Nonce / IV** | One-time value for encryption | Length (12/16 bytes), format (Hex/Base64) |
-| **Encryption Key** | 256-bit AES key for symmetric encryption | Format (Hex/Base64) |
+| **Encryption Key** | 256-bit AES key for symmetric encryption. AES-256-CBC and AES-256-GCM output key+IV/nonce pairs. | Format (Hex/Base64/AES-256-CBC/AES-256-GCM) |
 
 ### API & System Secrets
 
@@ -103,6 +112,8 @@ password-generator/
 ├── i18n.js             # Internationalization (da/en) + custom language loader
 └── qr.js               # Standalone QR code generator (SVG/PNG/PDF output)
 ```
+
+![Bulk generation](password-generator-05-bulk.png)
 
 **Data flow:**
 1. User selects a type in the sidebar → `app.js` reads type definition from `types.js`
